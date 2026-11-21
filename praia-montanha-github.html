@@ -1,0 +1,1842 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Praia ou Montanha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+:root{
+  --bg:#f5f3ee; --surface:#fdfcf9; --surface-2:#ebeef3; --ink:#10293f; --text:#33414f; --muted:#6b7684;
+  --line:#d9d6ce; --grid:#e6e3dc; --navy:#10293f; --navy-ink:#e8eef5; --navy-muted:#a9bccf;
+  --a:#1f8fc4; --a-soft:rgba(31,143,196,.16); --b:#9a6332; --b-soft:rgba(154,99,50,.16);
+  --accent:#2563b8; --danger:#d94848; --danger-soft:rgba(217,72,72,.10); --ok:#1f9d6b; --ok-soft:rgba(31,157,107,.12);
+  --conf:#9fd0ee; --shadow:0 1px 2px rgba(16,41,63,.05),0 10px 30px rgba(16,41,63,.07);
+  --radius:14px; --side:350px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1520; --surface:#122131; --surface-2:#18293b; --ink:#e9eff6; --text:#c3cedb; --muted:#8696a7;
+    --line:#26394d; --grid:#1d2f42; --navy:#0e2236; --navy-ink:#e9eff6; --navy-muted:#93a9bf;
+    --a:#4fb3e3; --a-soft:rgba(79,179,227,.20); --b:#c98d58; --b-soft:rgba(201,141,88,.22);
+    --accent:#6aa8f5; --danger:#f06b6b; --danger-soft:rgba(240,107,107,.12); --ok:#3cc28e; --ok-soft:rgba(60,194,142,.14);
+    --conf:#2f5f84; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1520; --surface:#122131; --surface-2:#18293b; --ink:#e9eff6; --text:#c3cedb; --muted:#8696a7;
+  --line:#26394d; --grid:#1d2f42; --navy:#0e2236; --navy-ink:#e9eff6; --navy-muted:#93a9bf;
+  --a:#4fb3e3; --a-soft:rgba(79,179,227,.20); --b:#c98d58; --b-soft:rgba(201,141,88,.22);
+  --accent:#6aa8f5; --danger:#f06b6b; --danger-soft:rgba(240,107,107,.12); --ok:#3cc28e; --ok-soft:rgba(60,194,142,.14);
+  --conf:#2f5f84; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.6 Inter,system-ui,sans-serif;transition:background .3s,color .3s}
+h1,h2,h3,h4{font-family:"Space Grotesk",Inter,sans-serif;color:var(--ink);line-height:1.15;margin:0}
+b,strong{color:var(--ink)}
+a{color:var(--accent)}
+.mono{font-family:"JetBrains Mono",monospace}
+
+/* ---------- Sidebar ---------- */
+#sidebar{position:fixed;inset:0 auto 0 0;width:var(--side);background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;z-index:40;transition:transform .3s ease}
+.side-head{padding:20px 20px 14px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center}
+.logo{width:40px;height:40px;border-radius:11px;background:var(--navy);display:grid;place-items:center;flex:none}
+.side-head h1{font-size:17px}
+.side-head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.side-scroll{overflow-y:auto;flex:1;padding:16px 18px 30px}
+.ctrl-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:14px 14px 6px;margin-bottom:16px}
+.ctrl-card h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.ctrl{margin-bottom:14px}
+.ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.ctrl label small{font-weight:500;color:var(--muted);font-size:12px}
+.ctrl-row{display:flex;gap:8px;align-items:center}
+input[type=range]{flex:1;accent-color:var(--accent);height:22px;min-width:0}
+input[type=number],input[type=text]{width:100%;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:7px 9px;font:600 14px Inter,sans-serif;min-width:0}
+.ctrl-row input[type=number]{width:86px;flex:none}
+input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:99px;padding:3px 10px;font:600 12px Inter,sans-serif;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.split{display:flex;height:30px;border-radius:9px;overflow:hidden;margin-top:8px;font:700 12px Inter,sans-serif;color:#fff}
+.split div{display:flex;align-items:center;padding:0 8px;white-space:nowrap;overflow:hidden;transition:width .25s}
+.split .sa{background:var(--a)} .split .sb{background:var(--b);justify-content:flex-end}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.names input{font-size:13px}
+.names .na{border-left:4px solid var(--a)} .names .nb{border-left:4px solid var(--b)}
+.check{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--text);cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 12px;font:600 13px Inter,sans-serif;cursor:pointer;display:inline-flex;gap:7px;align-items:center;transition:.15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.1);color:#fff}
+.btn svg{width:16px;height:16px}
+
+.tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px}
+.tab{flex:1;border:0;background:transparent;color:var(--muted);font:600 12.5px Inter,sans-serif;padding:7px 4px;border-radius:9px;cursor:pointer}
+.tab.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.pane{display:none}.pane.on{display:block}
+.nav-list{list-style:none;margin:0;padding:0;counter-reset:s}
+.nav-list a{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:9px;color:var(--text);text-decoration:none;font-size:14px}
+.nav-list a span{font:600 11px "JetBrains Mono",monospace;color:var(--muted);width:20px}
+.nav-list a:hover{background:var(--bg)}
+.nav-list a.active{background:var(--a-soft);color:var(--ink);font-weight:600}
+.nav-list a.active span{color:var(--accent)}
+.f-item{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;background:var(--bg)}
+.f-item h4{font-size:13px;margin-bottom:4px}
+.f-item p{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+.f-item .katex-display{margin:.4em 0;overflow-x:auto;overflow-y:hidden}
+.gl dt{font-weight:700;color:var(--ink);font-size:14px;margin-top:12px}
+.gl dd{margin:2px 0 0;font-size:13px;color:var(--text)}
+.ztab{width:100%;border-collapse:collapse;font-size:13.5px}
+.ztab th,.ztab td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left}
+.ztab tr.click{cursor:pointer}
+.ztab tr.click:hover td{background:var(--a-soft)}
+.ztab tr.on td{background:var(--a-soft);font-weight:700;color:var(--ink)}
+
+/* ---------- Main ---------- */
+main{margin-left:var(--side);min-height:100vh}
+.topbar{position:fixed;top:0;left:var(--side);right:0;z-index:30;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:10px 28px;flex-wrap:wrap;
+  transform:translateY(-100%);transition:transform .28s ease,left .3s ease}
+.topbar.pinned{transform:none}
+.bar-handle{position:absolute;top:100%;left:50%;transform:translateX(-50%);border:1px solid var(--line);border-top:0;
+  background:var(--surface);color:var(--muted);border-radius:0 0 12px 12px;padding:3px 14px 5px;font:600 12px Inter,sans-serif;
+  cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow);opacity:.75;transition:opacity .2s}
+.bar-handle:hover{opacity:1;color:var(--accent)}
+.bar-handle svg{width:14px;height:14px;transition:transform .25s}
+.topbar.pinned .bar-handle svg{transform:rotate(180deg)}
+.bar-handle .pin-lab::after{content:"Mostrar"}
+.topbar.pinned .bar-handle .pin-lab::after{content:"Recolher"}
+body.present .topbar{left:0}
+.topbar .sum{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:0}
+.pill{background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:13px;white-space:nowrap}
+.pill b{font-family:"JetBrains Mono",monospace;font-size:12.5px}
+.pill.tie{background:var(--danger-soft);border-color:transparent;color:var(--danger);font-weight:700}
+.pill.win{background:var(--ok-soft);border-color:transparent;color:var(--ok);font-weight:700}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;flex:none}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+.icon-btn svg{width:18px;height:18px}
+#menuBtn{display:none}
+.icon-sun{display:none}
+:root[data-theme="dark"] .icon-sun{display:block} :root[data-theme="dark"] .icon-moon{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .icon-sun{display:block}:root:not([data-theme="light"]) .icon-moon{display:none}}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+section.slide{padding:64px 0 56px;border-bottom:1px solid var(--line);scroll-margin-top:60px}
+.eyebrow{font:700 12.5px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.slide h2{font-size:clamp(28px,3.6vw,42px);margin-bottom:14px;letter-spacing:-.01em}
+.lead{font-size:18px;color:var(--text);max-width:860px;margin:0 0 26px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g-5-7{grid-template-columns:5fr 7fr}
+.g-7-5{grid-template-columns:7fr 5fr}
+.card{background:var(--surface);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);border-top:5px solid var(--navy);min-width:0}
+.card.ca{border-top-color:var(--a)} .card.cb{border-top-color:var(--b)} .card.plain{border-top:0}
+.card h3{font-size:20px;margin-bottom:6px}
+.card p{margin:6px 0 0}
+.card .big{font:700 clamp(30px,3.4vw,44px) "Space Grotesk",sans-serif;color:var(--ink);line-height:1.1;margin:6px 0}
+.card .sym{font:700 44px "Space Grotesk",sans-serif;color:var(--ink);line-height:1}
+.card svg.ic{width:30px;height:30px;color:var(--accent);margin-bottom:8px}
+.callout{background:var(--navy);color:var(--navy-ink);border-radius:var(--radius);padding:20px 24px;margin-top:22px}
+.callout b,.callout strong{color:#fff}
+:root[data-theme="dark"] .callout{border:1px solid var(--line)}
+.callout .katex{color:var(--navy-ink)}
+.note{border:1.5px dashed var(--danger);background:var(--danger-soft);border-radius:var(--radius);padding:14px 18px;margin-top:18px;font-size:15px}
+.tip{border-left:4px solid var(--accent);background:var(--surface-2);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin-top:18px;font-size:15px}
+.eq{background:var(--surface);border-radius:var(--radius);padding:18px 22px;box-shadow:var(--shadow);overflow-x:auto;overflow-y:hidden;margin:14px 0}
+.eq .katex-display{margin:.3em 0}
+.eq.hl{border-left:5px solid var(--accent);background:var(--surface-2);box-shadow:none}
+.katex{font-size:1.12em}
+.step{display:flex;gap:14px;align-items:flex-start;margin:14px 0}
+.step .num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font:700 14px Inter,sans-serif;display:grid;place-items:center;margin-top:12px}
+.step .eq{flex:1;margin:0}
+.step p{margin:4px 0 0;font-size:14.5px;color:var(--muted)}
+
+table.data{width:100%;border-collapse:separate;border-spacing:0;font-size:15px;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+table.data th{background:var(--navy);color:var(--navy-ink);text-align:left;padding:11px 14px;font-weight:600}
+table.data td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+table.data tr.hl td{background:var(--a-soft);font-weight:600;color:var(--ink)}
+table.data tr.hl2 td{background:var(--b-soft)}
+table.data td.num{font-family:"JetBrains Mono",monospace;font-size:14px;white-space:nowrap}
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius)}
+
+.chart-box{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 14px 8px;min-width:0}
+.chart-box h4{font-size:15px;margin:2px 6px 6px}
+.chart-box .cap{font-size:13px;color:var(--muted);margin:4px 6px 6px}
+svg.chart{width:100%;height:auto;display:block;font-family:Inter,sans-serif;overflow:visible}
+.ch-grid{stroke:var(--grid);stroke-width:1}
+.ch-axis{stroke:var(--muted);stroke-width:1.2}
+.ch-tick{fill:var(--muted);font-size:12px}
+.ch-lab{fill:var(--text);font-size:12.5px;font-weight:600}
+.ch-val{fill:var(--ink);font-size:13px;font-weight:700}
+.ch-hover-line{stroke:var(--muted);stroke-dasharray:3 3}
+.ch-tip rect{fill:var(--navy);opacity:.94}
+.ch-tip text{fill:#fff;font-size:12.5px;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--text);margin:4px 8px 6px}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend i.ln{height:3px;border-radius:2px;vertical-align:3px}
+.legend i.dash{height:0;border-top:2px dashed;background:none!important;vertical-align:3px}
+
+.hero{background:var(--navy);color:var(--navy-ink);border-left:16px solid var(--a);border-radius:0 0 var(--radius) 0;padding:90px 0 80px;margin:0}
+.hero h2{color:#fff;font-size:clamp(36px,5.4vw,66px);max-width:900px}
+.hero.cover{min-height:100vh;display:flex;align-items:center;border-radius:0}
+.hero.cover .wrap{width:100%}
+body.present .hero.cover{min-height:100vh}
+body.present #s-capa.cur{padding:0!important}
+.q-big{font:600 clamp(24px,3vw,38px)/1.4 "Space Grotesk",sans-serif;color:var(--ink);max-width:1000px;margin:40px 0 30px;text-align:justify}
+.hero.cover{position:relative;overflow:hidden;align-items:flex-start;padding-top:12vh}
+.pano{position:absolute;left:0;right:0;bottom:0;width:100%;height:46%;z-index:1;opacity:.95}
+.final{position:relative;overflow:hidden;padding-bottom:180px!important}
+.final>*{position:relative;z-index:1}
+.final .pano-final{position:absolute;left:0;bottom:0;width:100%;height:170px;z-index:0;opacity:.55}
+.vs-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:22px;align-items:center;margin:10px 0 26px}
+.scene{margin:0;background:var(--surface);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);transition:transform .25s}
+.scene:hover{transform:translateY(-4px) rotate(-.6deg)}
+.scene svg{display:block;width:100%;height:auto}
+.scene figcaption{padding:14px 18px;font:700 22px "Space Grotesk",sans-serif;color:var(--ink);display:flex;flex-direction:column}
+.scene figcaption small{font:500 14px Inter,sans-serif;color:var(--muted);margin-top:2px}
+.sa-card{border-bottom:6px solid var(--a)} .sb-card{border-bottom:6px solid var(--b)}
+.vs{width:68px;height:68px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font:700 22px "Space Grotesk",sans-serif;box-shadow:var(--shadow);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.emo{font-size:40px;line-height:1;margin-bottom:10px}
+.with-art{display:flex;gap:22px;align-items:center}
+.callout .tube{width:54px;flex:none}
+.guide .sign{width:170px;flex:none}
+@media (max-width:980px){.vs-wrap{grid-template-columns:1fr}.vs{margin:0 auto}.guide .sign{display:none}.pano{height:34%}}
+.hero .by{color:var(--navy-muted);font-weight:600;margin-top:16px;font-size:18px}
+.hero .q{font:600 clamp(20px,2.4vw,28px)/1.35 "Space Grotesk",sans-serif;color:var(--navy-ink);max-width:880px;margin-top:46px}
+.hero .q em{font-style:normal;color:#9cc6ff}
+.hero .q .bb{color:#ffb18a}
+.bigstat{font:700 clamp(54px,8vw,104px)/1 "Space Grotesk",sans-serif;letter-spacing:-.02em}
+.bigstat.a{color:var(--a)} .bigstat.b{color:var(--b)}
+.bigstat-lab{font-size:18px;margin-bottom:22px}
+.verdict{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;font-weight:700;font-size:14px;margin-top:6px}
+.verdict.tie{background:var(--danger-soft);color:var(--danger)}
+.verdict.win{background:var(--ok-soft);color:var(--ok)}
+.guide{background:var(--navy);border-left:16px solid var(--b);border-radius:var(--radius);padding:56px 48px;margin-top:10px}
+.guide h3{color:#fff;font-size:clamp(26px,3.6vw,44px);line-height:1.2}
+.guide p{color:var(--navy-muted);margin-top:18px;font-size:17px}
+.final{background:var(--navy);border-left:16px solid var(--a);border-radius:var(--radius);padding:56px 48px}
+.final h3{color:#fff;font-size:clamp(26px,3.6vw,46px);line-height:1.2}
+.final p{color:var(--navy-ink);font-size:18px;margin-top:18px;max-width:900px}
+.final b{color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:30px}
+.kpi{background:rgba(255,255,255,.07);border-radius:12px;padding:14px 16px}
+.kpi .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--navy-muted)}
+.kpi .v{font:700 26px "Space Grotesk",sans-serif;color:#fff;margin-top:4px}
+
+.popgrid{display:block;width:100%;max-width:420px;margin:0 auto}
+.pop-meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:10px;font-size:14px}
+.muted{color:var(--muted)}
+.mt0{margin-top:0}.mt{margin-top:18px}.mt2{margin-top:28px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* Presentation mode */
+.pres-nav{display:none;position:fixed;right:20px;bottom:20px;z-index:50;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:var(--shadow)}
+.pres-nav span{font:600 13px "JetBrains Mono",monospace;padding:0 8px;color:var(--muted)}
+body.present .pres-nav{display:flex}
+body.present #sidebar{transform:translateX(-100%)}
+body.present.drawer-open #sidebar{transform:none}
+body.present main{margin-left:0}
+body.present section.slide{display:none;min-height:calc(100vh - 62px);border:0;padding-top:40px}
+body.present section.slide.cur{display:block;animation:fade .35s ease}
+body.present #menuBtn{display:grid}
+body.present.pre-params .topbar .sum{visibility:hidden}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.scrim{display:none;position:fixed;inset:0;background:rgba(5,12,20,.45);z-index:35}
+body.drawer-open .scrim{display:block}
+
+@media (max-width:980px){
+  #sidebar{transform:translateX(-100%);width:min(92vw,360px)}
+  body.drawer-open #sidebar{transform:none}
+  main{margin-left:0}
+  #menuBtn{display:grid}
+  .g2,.g3,.g-5-7,.g-7-5{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topbar{padding:10px 16px;left:0}
+  .wrap{padding:0 16px}
+  .hero{border-left-width:8px}
+  .guide,.final{padding:36px 22px;border-left-width:8px}
+}
+/* Barra lateral recolhível (desktop) */
+.side-handle{display:none}
+@media (min-width:981px){
+  #sidebar{transform:translateX(-100%);transition:transform .28s ease;box-shadow:var(--shadow)}
+  body.side-pinned #sidebar,body.drawer-open #sidebar{transform:none}
+  main{margin-left:0;transition:margin-left .3s ease}
+  .topbar{left:0}
+  body.side-pinned main{margin-left:var(--side)}
+  body.side-pinned .topbar{left:var(--side)}
+  .side-handle{display:flex;position:absolute;left:100%;top:50%;transform:translateY(-50%);z-index:1;flex-direction:column;align-items:center;gap:6px;
+    border:1px solid var(--line);border-left:0;background:var(--surface);color:var(--muted);border-radius:0 12px 12px 0;padding:12px 4px;
+    font:600 12px Inter,sans-serif;cursor:pointer;box-shadow:var(--shadow);opacity:.75;transition:opacity .2s}
+  .side-handle:hover{opacity:1;color:var(--accent)}
+  .side-handle svg{width:14px;height:14px;transition:transform .25s}
+  body.side-pinned .side-handle svg,body.drawer-open .side-handle svg{transform:rotate(180deg)}
+  body.drawer-open .side-handle .pin-lab::after{content:"Recolher"}
+  .side-handle .pin-lab{writing-mode:vertical-rl;transform:rotate(180deg)}
+  .side-handle .pin-lab::after{content:"Parâmetros"}
+  body.side-pinned .side-handle .pin-lab::after{content:"Recolher"}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* ---------- Gráficos em Python (Pyodide + matplotlib) ---------- */
+.py-bar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:-4px -2px 6px}
+.py-msg{order:-1;margin-right:auto;padding-left:6px;font-size:11.5px;color:var(--muted)}
+.py-seg{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--bg)}
+.py-seg button{border:0;background:transparent;color:var(--muted);font:600 11.5px Inter,sans-serif;padding:3px 10px;cursor:pointer}
+.py-seg button.on{background:var(--accent);color:#fff}
+.py-codebtn{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:99px;font:600 11.5px "JetBrains Mono",monospace;padding:3px 9px;cursor:pointer}
+.py-codebtn:hover,.py-codebtn.on{border-color:var(--accent);color:var(--accent)}
+.py-out svg{width:100%;height:auto;display:block}
+.py-loading{min-height:220px;display:grid;place-items:center;color:var(--muted);font-size:14px;border:1px dashed var(--line);border-radius:10px}
+.fonte{margin:6px 6px 2px;font-size:12px;color:var(--muted);font-style:italic}
+.py-code{margin:8px 0 6px}
+.py-code pre{margin:0;max-height:340px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:12.5px/1.55 "JetBrains Mono",monospace;color:var(--ink);white-space:pre}
+.py-code details{margin-top:8px;font-size:13px}
+.py-code summary{cursor:pointer;color:var(--accent);font-weight:600;margin-bottom:6px}
+.py-status{font-size:12.5px;color:var(--muted);margin:8px 0 10px}
+.hljs-keyword,.hljs-built_in,.hljs-literal{color:var(--accent);font-weight:600}
+.hljs-string{color:var(--ok)}
+.hljs-number{color:var(--b)}
+.hljs-comment{color:var(--muted);font-style:italic}
+.hljs-title{color:var(--danger)}
+.hljs-meta{color:var(--b)}
+/* ---------- Bloqueio até definir parâmetros / proporção ---------- */
+.gate{display:none;position:sticky;top:70px;z-index:5;margin:0 0 22px;padding:18px 22px;border-radius:var(--radius);
+  background:var(--surface);border:2px dashed var(--accent);box-shadow:var(--shadow);align-items:center;gap:16px;flex-wrap:wrap}
+.gate p{margin:0;flex:1;min-width:220px;font-size:16px;color:var(--ink)}
+body.need-params section[data-need] .gate.g-params{display:flex}
+body.need-prop:not(.need-params) section[data-need="prop"] .gate.g-prop{display:flex}
+body.need-params section[data-need] .wrap>:not(.gate),
+body.need-prop section[data-need="prop"] .wrap>:not(.gate){opacity:.16;filter:blur(3px);pointer-events:none;user-select:none}
+.ctrl-card.flash{animation:flash 1.6s ease 2}
+@keyframes flash{50%{box-shadow:0 0 0 3px var(--accent)}}
+.refs{list-style:none;margin:10px 0 0;padding:0;max-width:900px}
+.refs li{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:14px 18px;margin-bottom:12px;font-size:16px;line-height:1.5}
+.gh-link{display:flex;align-items:center;gap:18px;max-width:900px;margin-top:28px;padding:20px 24px;border-radius:var(--radius);
+  background:var(--navy);color:var(--navy-ink);border-left:8px solid var(--a);box-shadow:var(--shadow);text-decoration:none;
+  transition:transform .2s ease,box-shadow .2s ease}
+.gh-link:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(16,41,63,.18);color:var(--navy-ink)}
+.gh-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+:root[data-theme="dark"] .gh-link{border:1px solid var(--line);border-left:8px solid var(--a)}
+.gh-logo{width:44px;height:44px;flex:none;color:#fff;transition:transform .2s ease}
+.gh-link:hover .gh-logo{transform:scale(1.06)}
+.gh-info{min-width:0;flex:1}
+.gh-eyebrow{font:700 11.5px Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#9cc6ff}
+.gh-title{font:700 20px "Space Grotesk",Inter,sans-serif;color:#fff;margin:2px 0 4px}
+.gh-url{font:500 13px "JetBrains Mono",monospace;color:var(--navy-muted);word-break:break-all}
+.gh-arrow{width:22px;height:22px;flex:none;color:#9cc6ff;transition:transform .2s ease}
+.gh-link:hover .gh-arrow{transform:translate(3px,-3px)}
+@media (max-width:980px){.gh-link{padding:16px 18px;gap:14px}.gh-logo{width:36px;height:36px}.gh-title{font-size:18px}}
+</style>
+</head>
+<body>
+<!-- ===== Biblioteca de ilustrações (SVG próprio) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gSkyB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc8f2"/><stop offset="1" stop-color="#dff4ff"/></linearGradient>
+    <linearGradient id="gSkyM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9c9f0"/><stop offset="1" stop-color="#eef6ff"/></linearGradient>
+    <radialGradient id="gSun"><stop offset="0" stop-color="#ffe9a3"/><stop offset="1" stop-color="#ffd166" stop-opacity="0"/></radialGradient>
+  </defs>
+  <symbol id="beach" viewBox="0 0 240 150">
+    <rect width="240" height="150" fill="url(#gSkyB)"/>
+    <circle cx="190" cy="36" r="30" fill="url(#gSun)"/><circle cx="190" cy="36" r="16" fill="#ffd166"/>
+    <g fill="#fff" opacity=".9"><ellipse cx="58" cy="30" rx="20" ry="7"/><ellipse cx="70" cy="25" rx="12" ry="8"/><ellipse cx="120" cy="45" rx="14" ry="5"/></g>
+    <path d="M30 52q5-5 10 0q5-5 10 0M95 30q4-4 8 0q4-4 8 0" stroke="#33506b" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M0 82Q30 76 60 82T120 82T180 82T240 82V112H0Z" fill="#2a9fd6"/>
+    <path d="M0 93Q30 87 60 93T120 93T180 93T240 93V112H0Z" fill="#5cc3ec" opacity=".75"/>
+    <path d="M0 108Q120 97 240 108V150H0Z" fill="#f3d9a4"/>
+    <path d="M78 140L72 96" stroke="#6b4f2f" stroke-width="3" stroke-linecap="round"/>
+    <path d="M44 100Q70 68 104 92Z" fill="#ef476f"/><path d="M60 88Q72 74 84 80L74 97Z" fill="#fff"/>
+    <rect x="94" y="124" width="42" height="12" rx="3" fill="#06d6a0" transform="rotate(-6 115 130)"/>
+    <circle cx="156" cy="132" r="8" fill="#fff"/><path d="M148 132a8 8 0 0 1 16 0Z" fill="#ef476f"/><path d="M156 124v16" stroke="#118ab2" stroke-width="2"/>
+    <path d="M206 146Q201 110 190 78" stroke="#8d6e4f" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <g fill="#2e9e5b"><path d="M190 78Q165 64 142 80Q168 71 190 78"/><path d="M190 78Q212 58 236 70Q212 67 190 78"/><path d="M190 78Q182 54 162 46Q181 60 190 78"/><path d="M190 78Q205 52 222 48Q203 62 190 78"/></g>
+    <circle cx="188" cy="82" r="3.5" fill="#7a5230"/><circle cx="194" cy="83" r="3.5" fill="#7a5230"/>
+  </symbol>
+  <symbol id="mountain" viewBox="0 0 240 150">
+    <rect width="240" height="150" fill="url(#gSkyM)"/>
+    <circle cx="42" cy="34" r="24" fill="url(#gSun)"/><circle cx="42" cy="34" r="12" fill="#ffe08a"/>
+    <path d="M180 30q4-4 8 0q4-4 8 0M200 44q3-3 6 0q3-3 6 0" stroke="#33506b" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <polygon points="-10,122 60,55 120,122" fill="#8fa3bf"/>
+    <polygon points="70,122 150,32 232,122" fill="#5f7591"/>
+    <polygon points="160,122 215,68 270,122" fill="#7a8fab"/>
+    <polygon points="150,32 135,50 144,47 151,55 159,46 166,51" fill="#fff"/>
+    <polygon points="60,55 50,66 57,63 63,69 69,64" fill="#fff"/>
+    <polygon points="215,68 207,77 213,75 219,80 224,76" fill="#fff"/>
+    <path d="M0 118Q120 106 240 118V150H0Z" fill="#4f9a5f"/>
+    <ellipse cx="112" cy="134" rx="40" ry="7" fill="#7cc4e8"/>
+    <g fill="#2f6f45"><polygon points="12,142 22,108 32,142"/><polygon points="30,144 40,114 50,144"/><polygon points="206,144 216,110 226,144"/><polygon points="62,146 70,122 78,146"/></g>
+    <rect x="160" y="118" width="26" height="18" fill="#9a6332"/><polygon points="155,120 173,104 191,120" fill="#6b3f1f"/>
+    <rect x="166" y="123" width="7" height="6" fill="#ffd166"/><rect x="177" y="126" width="5" height="10" fill="#5a3518"/>
+    <path d="M181 104v-8" stroke="#6b3f1f" stroke-width="4"/><path d="M181 94q4-6 0-10q-4-4 2-9" stroke="#fff" stroke-width="2" fill="none" opacity=".8"/>
+  </symbol>
+  <symbol id="tube" viewBox="0 0 80 160">
+    <g transform="rotate(8 40 80)">
+      <rect x="24" y="14" width="32" height="132" rx="16" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-width="3"/>
+      <rect x="27.5" y="72" width="25" height="71" rx="12.5" fill="#e63946"/>
+      <path d="M28 76q12 6 24 0" stroke="#ff8fa3" stroke-width="2.5" fill="none"/>
+      <rect x="18" y="4" width="44" height="20" rx="5" fill="#8ecae6"/>
+      <rect x="31" y="34" width="18" height="26" rx="2" fill="#fff" opacity=".9"/><path d="M34 41h12M34 47h12M34 53h8" stroke="#8a99a8" stroke-width="2"/>
+      <circle cx="36" cy="100" r="3" fill="#ffb3c1"/><circle cx="44" cy="118" r="2.2" fill="#ffb3c1"/>
+    </g>
+  </symbol>
+  <symbol id="signpost" viewBox="0 0 220 200">
+    <ellipse cx="110" cy="192" rx="60" ry="7" fill="rgba(255,255,255,.12)"/>
+    <rect x="104" y="28" width="12" height="166" rx="3" fill="#c49a6c"/>
+    <path d="M14 56L36 34H122V78H36Z" fill="#1f8fc4"/>
+    <text x="78" y="62" text-anchor="middle" font-family="Space Grotesk,Inter,sans-serif" font-weight="700" font-size="17" fill="#fff">🏖️ PRAIA</text>
+    <path d="M98 94H190L210 116L190 138H98Z" fill="#9a6332"/>
+    <text x="152" y="122" text-anchor="middle" font-family="Space Grotesk,Inter,sans-serif" font-weight="700" font-size="14" fill="#fff">MONTANHA ⛰️</text>
+    <text x="178" y="58" font-family="Space Grotesk,Inter,sans-serif" font-weight="700" font-size="54" fill="#ffd166">?</text>
+  </symbol>
+  <symbol id="pano" viewBox="0 0 1200 260">
+    <circle cx="190" cy="92" r="80" fill="url(#gSun)" opacity=".7"/><circle cx="190" cy="92" r="40" fill="#ffd166"/>
+    <path d="M300 70q8-8 16 0q8-8 16 0M360 100q6-6 12 0q6-6 12 0M640 60q7-7 14 0q7-7 14 0" stroke="#cfe3f5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M0 196C100 182 200 210 300 196S500 182 700 200V262H0Z" fill="#2a9fd6"/>
+    <path d="M0 216C120 206 220 228 340 214S520 206 700 222V262H0Z" fill="#5cc3ec" opacity=".8"/>
+    <path d="M0 238C200 228 420 246 720 236V262H0Z" fill="#f3d9a4"/>
+    <polygon points="540,262 760,72 980,262" fill="#3d5a80"/>
+    <polygon points="760,262 980,36 1200,262" fill="#4a6c96"/>
+    <polygon points="980,262 1120,118 1260,262" fill="#36506f"/>
+    <polygon points="760,72 734,100 750,95 762,108 776,96 790,104" fill="#fff"/>
+    <polygon points="980,36 950,72 968,66 982,82 996,68 1013,76" fill="#fff"/>
+    <polygon points="1120,118 1101,140 1112,136 1121,146 1132,138" fill="#fff"/>
+    <g fill="#1f4d3a"><polygon points="700,262 716,206 732,262"/><polygon points="730,262 750,196 770,262"/><polygon points="860,262 874,214 888,262"/><polygon points="1010,262 1028,200 1046,262"/><polygon points="1050,262 1064,216 1078,262"/><polygon points="1150,262 1168,204 1186,262"/></g>
+    <path d="M480 246Q470 190 450 140" stroke="#8d6e4f" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <g fill="#2e9e5b"><path d="M450 140Q402 114 360 144Q406 126 450 140"/><path d="M450 140Q492 104 538 124Q492 120 450 140"/><path d="M450 140Q436 96 398 82Q432 108 450 140"/><path d="M450 140Q478 94 510 86Q476 112 450 140"/></g>
+    <path d="M282 252L270 206" stroke="#e9e2d0" stroke-width="4" stroke-linecap="round"/>
+    <path d="M232 212Q264 172 306 198Z" fill="#ef476f"/><path d="M252 198Q266 182 282 188L270 207Z" fill="#fff"/>
+  </symbol>
+</svg>
+
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebar" aria-label="Parâmetros e referências">
+  <div class="side-head">
+    <div class="logo"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M3 20h18"/><rect x="5" y="11" width="4" height="9" rx="1" fill="#1f8fc4" stroke="none"/><rect x="11" y="6" width="4" height="14" rx="1" fill="#9a6332" stroke="none"/><path d="M17 9c1.5-3 3-4 4-4"/></svg></div>
+    <div><h1>Praia ou Montanha?</h1><p>Uma parte fala sobre o todo</p></div>
+  </div>
+  <button class="side-handle" id="sideHandle" title="Clique para mostrar/recolher (tecla S)" aria-label="Fixar ou recolher a barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg><span class="pin-lab"></span></button>
+  <div class="side-scroll">
+    <div class="ctrl-card" id="cardParams">
+      <h3>Parâmetros do estudo</h3>
+      <div class="ctrl">
+        <label for="inN">População <small>N</small></label>
+        <input type="number" id="inN" min="10" step="1" value="" placeholder="0 · a definir">
+        <div class="chips" data-group="N">
+          <button class="chip" data-val="10000">10 mil</button>
+          <button class="chip" data-val="100000">100 mil</button>
+          <button class="chip" data-val="1000000">1 mi</button>
+          <button class="chip" data-val="15000000">15 mi</button>
+          <button class="chip" data-val="210000000">210 mi</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label for="rgConf">Nível de confiança <small>conf</small></label>
+        <div class="ctrl-row"><input type="range" id="rgConf" min="80" max="99.9" step="0.1" value="80"><input type="number" id="inConf" min="50" max="99.99" step="0.1" value="" placeholder="0"></div>
+        <div class="chips" data-group="conf">
+          <button class="chip" data-val="90">90%</button><button class="chip" data-val="95">95%</button><button class="chip" data-val="99">99%</button><button class="chip" data-val="99.9">99,9%</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label for="rgEps">Margem de erro prevista <small>ε em p.p.</small></label>
+        <div class="ctrl-row"><input type="range" id="rgEps" min="0.5" max="10" step="0.1" value="0.5"><input type="number" id="inEps" min="0.1" max="30" step="0.1" value="" placeholder="0"></div>
+        <div class="chips" data-group="eps">
+          <button class="chip" data-val="1">±1</button><button class="chip" data-val="2">±2</button><button class="chip" data-val="3">±3</button><button class="chip" data-val="5">±5</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctrl-card" id="cardProp">
+      <h3>Resultado observado</h3>
+      <div class="ctrl">
+        <div class="names">
+          <input type="text" id="inNameA" class="na" value="Praia" maxlength="22" aria-label="Nome da opção A">
+          <input type="text" id="inNameB" class="nb" value="Montanha" maxlength="22" aria-label="Nome da opção B">
+        </div>
+      </div>
+      <div class="ctrl">
+        <label for="rgP">Proporção da pesquisa <small>% de cada opção</small></label>
+        <div class="ctrl-row"><input type="number" id="inPA" class="na" min="0.5" max="99.5" step="0.1" value="" placeholder="0" aria-label="Porcentagem da opção A" style="border-left:4px solid var(--a)"><input type="range" id="rgP" min="1" max="99" step="0.5" value="50" aria-label="Divisão entre as opções"><input type="number" id="inP" min="0.5" max="99.5" step="0.1" value="" placeholder="0" aria-label="Porcentagem da opção B" style="border-left:4px solid var(--b)"></div>
+        <div class="split" aria-hidden="true"><div class="sa" id="splitA">—</div><div class="sb" id="splitB">—</div></div>
+        <div class="chips" data-group="p">
+          <button class="chip" data-val="40">60 × 40</button><button class="chip" data-val="47">53 × 47</button><button class="chip" data-val="50">50 × 50</button><button class="chip" data-val="53">47 × 53</button><button class="chip" data-val="60">40 × 60</button>
+        </div>
+        <small class="muted" style="font-size:12px">A opção com maior proporção passa a ser a referência (X = 1) do restante da apresentação.</small>
+      </div>
+      <div class="ctrl">
+        <label class="check"><input type="checkbox" id="ckN"> Usar outro tamanho de amostra</label>
+        <div class="ctrl-row mt0" style="margin-top:6px"><input type="number" id="inNcustom" min="10" step="1" value="1608" disabled aria-label="Tamanho de amostra personalizado"></div>
+        <small class="muted" style="font-size:12px">Desmarcado: n = mínimo calculado pela fórmula.</small>
+      </div>
+      <div class="row" style="margin-bottom:10px"><button class="btn" id="btnReset">↺ Zerar todos os parâmetros</button></div>
+    </div>
+
+    <div class="ctrl-card">
+      <h3>Gráficos em Python</h3>
+      <p style="font-size:13px;margin:0 0 4px">🐍 Todos os gráficos são desenhados com matplotlib (Pyodide).</p>
+      <p class="py-status" id="pyStatus">O Python carrega em segundo plano.</p>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-pane="pSec" role="tab">Seções</button>
+      <button class="tab" data-pane="pForm" role="tab">Fórmulas</button>
+      <button class="tab" data-pane="pGlos" role="tab">Glossário</button>
+      <button class="tab" data-pane="pZ" role="tab">Tabela z</button>
+    </div>
+    <div class="pane on" id="pSec"><ul class="nav-list" id="navList"></ul></div>
+    <div class="pane" id="pForm">
+      <div class="f-item"><h4>Tamanho da amostra</h4><div class="tex d" data-tex="n_0=\frac{p(1-p)}{\varepsilon^2}\,z^2"></div><p>Com p = 0,5 (pior caso).</p></div>
+      <div class="f-item"><h4>Correção para população finita</h4><div class="tex d" data-tex="n=\frac{n_0}{1+\frac{n_0-1}{N}}"></div></div>
+      <div class="f-item"><h4>Valor crítico</h4><div class="tex d" data-tex="z_{\alpha/2}=\Phi^{-1}\!\left(1-\tfrac{\alpha}{2}\right),\quad \alpha=1-\text{conf}"></div></div>
+      <div class="f-item"><h4>Bernoulli</h4><div class="tex d" data-tex="P(X=x)=p^x(1-p)^{1-x}"></div><div class="tex d" data-tex="E[X]=p,\quad \operatorname{Var}[X]=p(1-p)"></div></div>
+      <div class="f-item"><h4>Binomial</h4><div class="tex d" data-tex="P(K=k)=\binom{n}{k}p^k(1-p)^{n-k}"></div><div class="tex d" data-tex="E[K]=np,\quad \operatorname{Var}[K]=np(1-p)"></div></div>
+      <div class="f-item"><h4>Erro padrão e margem</h4><div class="tex d" data-tex="EP=\sqrt{\frac{\hat p(1-\hat p)}{n}},\qquad \varepsilon=z\cdot EP"></div></div>
+      <div class="f-item"><h4>Verossimilhança</h4><div class="tex d" data-tex="L(p)=p^k(1-p)^{n-k}"></div><div class="tex d" data-tex="\ell(p)=k\ln p+(n-k)\ln(1-p)"></div><div class="tex d" data-tex="\hat p_{MV}=\frac{k}{n}"></div></div>
+      <div class="f-item"><h4>Informação observada</h4><div class="tex d" data-tex="I(\hat p)=-\ell''(\hat p)=\frac{n}{\hat p(1-\hat p)},\quad EP=\frac{1}{\sqrt{I(\hat p)}}"></div></div>
+      <div class="f-item"><h4>Fração amostral</h4><div class="tex d" data-tex="f=\frac{n}{N}"></div></div>
+      <div class="f-item"><h4>Verossimilhança relativa</h4><div class="tex d" data-tex="\frac{L(p)}{L(\hat p)}=\Big(\frac{p}{\hat p}\Big)^{k}\Big(\frac{1-p}{1-\hat p}\Big)^{n-k}"></div></div>
+      <div class="f-item"><h4>Intervalo de confiança</h4><div class="tex d" data-tex="IC=\hat p\pm z_{\alpha/2}\cdot EP"></div></div>
+    </div>
+    <div class="pane" id="pGlos">
+      <dl class="gl">
+        <dt>População (N)</dt><dd>Conjunto completo de interesse — todos os moradores.</dd>
+        <dt>Parâmetro (p)</dt><dd>Valor verdadeiro na população. Fixo, mas desconhecido.</dd>
+        <dt>Amostra (n)</dt><dd>Parte da população sorteada ao acaso.</dd>
+        <dt>Estatística (p̂)</dt><dd>Valor calculado na amostra; muda de uma pesquisa para outra.</dd>
+        <dt>Nível de confiança</dt><dd>Proporção de intervalos que conteriam p se o estudo fosse repetido muitas vezes.</dd>
+        <dt>α (significância)</dt><dd>1 − confiança. Fração de intervalos que “erram” o alvo.</dd>
+        <dt>Margem de erro (ε)</dt><dd>Quanto p̂ pode se afastar de p, para mais ou para menos, no nível de confiança escolhido.</dd>
+        <dt>p.p. (pontos percentuais)</dt><dd>Diferença absoluta entre porcentagens: de 49% para 52% são 3 p.p.</dd>
+        <dt>Desvio padrão (s)</dt><dd>Quão diferentes as pessoas são entre si. Não diminui com n.</dd>
+        <dt>Erro padrão (EP)</dt><dd>Quanto p̂ oscilaria entre pesquisas repetidas. Cai com √n.</dd>
+        <dt>Independência</dt><dd>A resposta de um entrevistado não muda a chance da resposta do próximo.</dd>
+        <dt>Viés de autosseleção</dt><dd>Erro sistemático de amostras voluntárias; a margem de erro não o corrige.</dd>
+        <dt>Verossimilhança L(p)</dt><dd>Plausibilidade de cada valor de p diante dos dados já observados.</dd>
+        <dt>Empate técnico</dt><dd>Quando os intervalos de confiança das duas opções se sobrepõem (o da opção à frente alcança 50%).</dd>
+        <dt>Fração amostral (n/N)</dt><dd>Parte da população efetivamente entrevistada.</dd>
+      </dl>
+    </div>
+    <div class="pane" id="pZ">
+      <p class="muted" style="font-size:13px;margin-top:0">Clique numa linha para aplicar a confiança.</p>
+      <table class="ztab"><thead><tr><th>Confiança</th><th>α</th><th>z<sub>α/2</sub></th></tr></thead><tbody id="zBody"></tbody></table>
+    </div>
+  </div>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<!-- ================= MAIN ================= -->
+<main>
+  <div class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="Abrir parâmetros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <div class="sum">
+      <span class="pill">N <b data-v="N">15.000.000</b></span>
+      <span class="pill">n <b data-v="n">1.068</b></span>
+      <span class="pill">z <b data-v="z3">1,960</b></span>
+      <span class="pill">margem <b data-v="moePP">±3,0 p.p.</b></span>
+      <span class="pill" id="pillVerdict">Empate técnico</span>
+    </div>
+    <button class="btn" id="btnPresent" title="Modo apresentação (teclas ← →)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span>Apresentar</span></button>
+    <button class="icon-btn" id="themeBtn" aria-label="Alternar modo claro/escuro">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button class="bar-handle" id="barHandle" title="Clique para mostrar/recolher (tecla B)" aria-label="Fixar ou recolher a barra superior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span class="pin-lab"></span></button>
+  </div>
+
+  <!-- 1. CAPA -->
+  <section class="slide" id="s-capa" data-title="Capa" style="padding:0;border:0">
+    <div class="hero cover"><div class="wrap" style="position:relative;z-index:2">
+      <h2>Estatística: como uma parte fala sobre um todo</h2>
+      <div class="by">Pedro Lourenço</div>
+    </div>
+    <svg class="pano" viewBox="0 0 1200 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><use href="#pano"/></svg>
+    </div>
+  </section>
+
+  <!-- 1b. PERGUNTA -->
+  <section class="slide" id="s-pergunta" data-title="A pergunta"><div class="wrap">
+    <div class="eyebrow">O problema fundamental</div>
+    <p class="q-big">Considere que você precisa saber a preferência dos moradores de uma metrópole entre dois destinos de férias — <span style="color:var(--a)" data-v="nameA">Praia</span> e <span style="color:var(--b)" data-v="nameB">Montanha</span>. Como fazer isso de maneira eficiente?</p>
+    <div class="vs-wrap">
+      <figure class="scene sa-card"><svg viewBox="0 0 240 150" aria-hidden="true"><use href="#beach"/></svg><figcaption>🏖️ <span data-v="nameA">Praia</span><small>sol, mar e água de coco</small></figcaption></figure>
+      <div class="vs">VS</div>
+      <figure class="scene sb-card"><svg viewBox="0 0 240 150" aria-hidden="true"><use href="#mountain"/></svg><figcaption>⛰️ <span data-v="nameB">Montanha</span><small>trilha, frio e chocolate quente</small></figcaption></figure>
+    </div>
+    <div class="tip">Use o painel à esquerda para mudar a <b>população</b>, o <b>nível de confiança</b>, a <b>margem de erro</b> e a <b>proporção entre os destinos</b>. Todos os números, equações e gráficos se recalculam na hora.</div>
+  </div></section>
+
+  <!-- 2. PROBLEMA -->
+  <section class="slide" id="s-problema" data-title="O problema fundamental"><div class="wrap">
+    <div class="eyebrow">O problema fundamental</div>
+    <h2>Ouvir toda uma população é inviável. Ouvir parte dela, não.</h2>
+    <p class="lead">Queremos saber a preferência de todos os moradores da metrópole. Perguntar a todos é um <i>censo</i> — caro, lento e quase impossível. A Estatística oferece um atalho rigoroso: perguntar a poucas, escolhidas ao acaso, e <b>quantificar</b> o quanto podemos errar.</p>
+    <div class="grid g3">
+      <div class="card"><div class="emo">💸</div><h3>Custo</h3><p>Entrevistar cada morador custaria uma fortuna. Uma amostra bem dimensionada custa só uma pequena fração disso.</p></div>
+      <div class="card"><div class="emo">⏳</div><h3>Tempo</h3><p>Quando a pesquisa terminasse, a opinião já teria mudado. Uma amostra é rápida o bastante para retratar o “agora”.</p></div>
+      <div class="card"><div class="emo">🗺️</div><h3>Logística</h3><p>Alcançar todo mundo, em todo lugar, é impraticável. Sortear e alcançar algumas centenas ou milhares é viável.</p></div>
+    </div>
+    <div class="callout with-art"><svg class="tube" viewBox="0 0 80 160" aria-hidden="true"><use href="#tube"/></svg><div>Num exame de sangue, ninguém retira todo o sangue do paciente — como o sangue <b>circula e se mistura</b> (aleatorização), basta <b>um tubinho</b>. E o tubinho tem o mesmo tamanho para uma criança ou para um adulto: o tamanho da amostra <b>não depende</b> do tamanho do todo. Experimente: mude N de 100 mil para 210 milhões e veja o n quase não mudar.</div></div>
+  </div></section>
+
+  <!-- 3. CONCEITOS -->
+  <section class="slide" id="s-conceitos" data-title="Conceitos estruturais"><div class="wrap">
+    <div class="eyebrow">Conceitos estruturais</div>
+    <h2>Parâmetro é o que queremos; estatística é o que medimos</h2>
+    <div class="grid g3">
+      <div class="card ca"><div class="sym">N</div><h3 class="mt">População</h3><p>Número total de moradores. Tem uma preferência real <b>p</b>: fixa, porém <b>desconhecida</b> (parâmetro).</p></div>
+      <div class="card cb"><div class="sym">n</div><h3 class="mt">Amostra</h3><p>Moradores sorteados ao acaso. Fornece a proporção observada <b>p̂</b>, que <b>muda</b> a cada nova pesquisa (estatística).</p></div>
+      <div class="card"><div class="sym">⊥</div><h3 class="mt">Independência</h3><p>A resposta de um entrevistado não altera a chance da resposta do próximo. É ela que permite <b>somar variâncias</b> mais adiante.</p></div>
+    </div>
+    <div class="grid g-7-5 mt2">
+      <div class="chart-box">
+        <h4>Mini-população: sorteie um “tubinho”</h4>
+        <div id="popGrid"></div>
+        <div class="pop-meta">
+          <div class="legend" style="margin:0"><span><i style="background:var(--a)"></i><span data-v="nameA">Praia</span></span><span><i style="background:var(--b)"></i><span data-v="nameB">Montanha</span></span><span><i style="background:transparent;border:2px solid var(--ink)"></i>sorteado</span></div>
+          <button class="btn primary" id="btnSample">🎲 Sortear 40 pessoas</button>
+        </div>
+      </div>
+      <div class="card plain">
+        <h3>O que está acontecendo?</h3>
+        <p>A grade tem 400 “pessoas”, <span data-v="popTxt">divididas entre os dois destinos</span> — essa proporção é o <b>parâmetro p</b> (na vida real ele é desconhecido).</p>
+        <p>Cada clique sorteia 40 pessoas e calcula <b>p̂</b>. Note que p̂ <b>varia</b> de sorteio para sorteio, mas gira em torno de p.</p>
+        <div class="eq hl" style="margin-top:14px"><div style="font-size:14px" class="muted">Última amostra</div><div style="font:700 30px 'Space Grotesk'" id="popPhat">—</div><div class="muted" style="font-size:13px" id="popHist"></div></div>
+      </div>
+    </div>
+    <div class="tip"><b>Volume de dados não substitui o desenho amostral.</b> 100 mil votos voluntários geram uma amostra <i>não probabilística</i>, dominada por erro sistemático (viés de autosseleção). A margem de erro mede apenas a <b>variância</b> e pressupõe aleatoriedade — logo, não corrige distorções de coleta.</div>
+  </div></section>
+
+  <!-- 4. PILARES -->
+  <section class="slide" id="s-pilares" data-title="Os três pilares"><div class="wrap">
+    <div class="eyebrow">Tamanho da amostra · 1</div>
+    <h2>Como definir o tamanho de uma amostra?</h2>
+    <p class="lead">Tamanho da população: <b style="font:700 1.3em 'Space Grotesk'" data-v="Nlong">a definir</b><span data-v="Nunit"></span>. O <b>dimensionamento matemático da amostra</b> diz quantas pessoas bastam para a precisão que escolhermos. Ele se apoia em três pilares:</p>
+    <div class="tbl-wrap"><table class="data">
+      <thead><tr><th style="width:21%">Pilar do cálculo</th><th>O que representa</th><th style="width:30%">Valor (atual)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Nível de confiança</b></td><td>Proporção de intervalos de confiança que conteriam o valor verdadeiro do parâmetro se o mesmo estudo fosse repetido muitas vezes, nas mesmas condições, com amostras diferentes.</td><td><span class="tex" data-fn="alpha"></span></td></tr>
+        <tr><td><b>Margem de erro</b></td><td>Quanto o resultado da amostra pode se afastar do valor real da população, para mais ou para menos, dentro do nível de confiança. É escolhida conforme a precisão desejada.</td><td><span class="tex" data-fn="eps"></span></td></tr>
+        <tr><td><b>Variabilidade dos dados</b></td><td>Sem conhecer a preferência prévia, adotamos p = 0,50: com a população dividida ao meio a variabilidade é máxima — o cenário mais seguro e conservador.</td><td><span class="tex" data-tex="X_i\in\{0,1\}\Rightarrow p=0{,}5"></span><br><span class="tex" data-tex="p(1-p)=0{,}25"></span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid g2 mt2">
+      <div class="chart-box"><h4>Por que p = 0,5 é o “pior caso”?</h4><div id="chVar"></div><p class="cap">p(1−p) atinge o máximo 0,25 em p = 0,5. Qualquer outra proporção exige <b>menos</b> entrevistas — por isso planejar com 0,5 é seguro.</p></div>
+      <div class="card plain">
+        <h3>Lendo os pilares</h3>
+        <p>• Mais <b>confiança</b> ⇒ z maior ⇒ amostra maior.</p>
+        <p>• Margem <b>menor</b> ⇒ amostra cresce com o <b>quadrado</b>: reduzir ε pela metade quadruplica n.</p>
+        <p>• Mais <b>variabilidade</b> ⇒ amostra maior (máximo em p = 0,5).</p>
+        <div class="eq hl mt"><span class="muted" style="font-size:13px">Agora:</span> <span data-v="pillarTxt"></span></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 5. Z -->
+  <section class="slide" id="s-z" data-need="params" data-title="De onde sai o z"><div class="wrap">
+    <div class="eyebrow">Tamanho da amostra · 2 · De onde sai o z</div>
+    <h2>Distribuição dos dados</h2>
+    <div class="grid g-7-5">
+      <div class="chart-box"><div id="chNormal"></div>
+        <div class="legend"><span><i style="background:var(--danger);opacity:.6"></i>Região de rejeição (α = <span data-v="alpha">0,05</span>)</span><span><i style="background:var(--conf)"></i>Confiança (<span data-v="confPct">95%</span>)</span></div>
+      </div>
+      <div>
+        <div class="eq hl"><div class="tex d" data-fn="z"></div></div>
+        <p>Com <b data-v="confPct">95%</b> de confiança, <b data-v="confPct">95%</b> da área sob a curva normal padrão fica entre <b data-v="zneg">−1,96</b> e <b data-v="zpos">+1,96</b>. Os <b data-v="alphaPct">5%</b> restantes (<span data-v="alphaHalfPct">2,5%</span> em cada cauda) formam a região de rejeição.</p>
+        <p>Na prática, valores amostrais que caem dentro desse intervalo central são considerados compatíveis com a hipótese nula — representam variações aleatórias esperadas —, enquanto estatísticas que ultrapassam esses limites críticos indicam evidência estatisticamente significativa para rejeitá-la.</p>
+        <div class="tip">Por que a Normal? Pelo <b>Teorema Central do Limite</b>: a soma de muitas respostas independentes (0 ou 1) tem distribuição aproximadamente Normal — veremos isso na simulação.</div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 6. FÓRMULA -->
+  <section class="slide" id="s-formula" data-need="params" data-title="Calculando n"><div class="wrap">
+    <div class="eyebrow">Tamanho da amostra · 3</div>
+    <h2>Tamanho da amostra: substituindo os valores</h2>
+    <div class="eq" style="text-align:center"><div class="tex d" data-tex="n_0=\frac{p(1-p)}{\varepsilon^{2}}\,z^{2}" style="font-size:1.5em"></div></div>
+    <div class="step"><div class="num">1</div><div class="eq"><div class="tex d" data-fn="subst"></div><p>Valores atuais: p = 0,5; z = <span data-v="z3">1,960</span>; ε = <span data-v="epsDec">0,03</span>.</p></div></div>
+    <div class="step"><div class="num">2</div><div class="eq"><div class="tex d" data-fn="ceil0"></div><p>Arredondamos <b>sempre para cima</b> (função teto): não existe “0,07 pessoa”, e arredondar para baixo deixaria a margem acima de ε.</p></div></div>
+    <div class="step"><div class="num">3</div><div class="eq hl"><div class="tex d" data-fn="frac"></div><p data-v="fracTxt"></p></div></div>
+    <div class="callout">Para <b>±<span data-v="epsTxt">3</span> p.p.</b> com <b data-v="confPct">95%</b> de confiança bastam <b data-v="n0ceil">1.068</b> entrevistas — apenas <b data-v="fracPct">0,007%</b> da população. Repare: <b>N nem aparece</b> na fórmula de n₀ — o tubinho de sangue não depende do tamanho do paciente.</div>
+  </div></section>
+
+  <!-- 8. MARGEM -->
+  <section class="slide" id="s-margem" data-need="params" data-title="Margem × tamanho"><div class="wrap">
+    <div class="eyebrow">Pilar 2 · Margem de erro</div>
+    <h2>Qual a margem de erro real?</h2>
+    <p class="lead">A margem cai com <b>√n</b>: para dividir o erro por 2 é preciso <b>quadruplicar</b> a amostra. Por isso os ganhos ficam caros rapidamente. Passe o mouse no gráfico.</p>
+    <div class="grid g-7-5">
+      <div class="chart-box"><div id="chMargin"></div>
+        <div class="legend"><span><i class="ln" style="background:var(--a)"></i>Margem de erro (<span data-v="confPct">95%</span>, p = 0,5)</span><span><i style="background:var(--danger)"></i>amostra atual</span><span><i class="dash" style="border-color:var(--muted)"></i>ε planejado</span></div>
+      </div>
+      <div class="tbl-wrap"><table class="data"><thead><tr><th>Amostra</th><th>Margem (<span data-v="confPct">95%</span>)</th></tr></thead><tbody id="tbMargin"></tbody></table></div>
+    </div>
+  </div></section>
+
+  <!-- 9. RESULTADO -->
+  <section class="slide" id="s-resultado" data-need="prop" data-title="Pesquisa realizada"><div class="wrap">
+    <div class="eyebrow">Resultado da pesquisa · n = <span data-v="n">1.068</span></div>
+    <h2>Pesquisa realizada</h2>
+    <div class="grid g-5-7" style="align-items:center">
+      <div>
+        <div class="bigstat a" data-v="pctA">49,0%</div>
+        <div class="bigstat-lab">🏖️ <b data-v="nameA">Praia</b> · <span data-v="votesA">523</span> votos</div>
+        <div class="bigstat b" data-v="pctB">51,0%</div>
+        <div class="bigstat-lab">⛰️ <b data-v="nameB">Montanha</b> · <span data-v="votesB">545</span> votos</div>
+        <p data-v="resultTxt"></p>
+        <span class="verdict" id="verdict1">Empate técnico</span>
+      </div>
+      <div class="chart-box"><div id="chResult"></div>
+        <div class="legend"><span><i style="background:repeating-linear-gradient(45deg,var(--ink) 0 1px,transparent 1px 5px);border:1px solid var(--ink)"></i>faixa ± margem</span><span><i class="dash" style="border-color:var(--ink)"></i>50%</span></div>
+      </div>
+    </div>
+    <div class="guide mt2 with-art">
+      <svg class="sign" viewBox="0 0 220 200" aria-hidden="true"><use href="#signpost"/></svg>
+      <div>
+      <div class="eyebrow" style="color:#ffb18a">A pergunta-guia</div>
+      <h3 data-v="guideQ">Por que 1.068 entrevistas não bastaram para declarar um vencedor?</h3>
+      <p>Existem outros parâmetros que podem responder esse questionamento. Vamos construí-los passo a passo.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 10. DISPERSAO -->
+  <section class="slide" id="s-dispersao" data-need="prop" data-title="Pessoas × pesquisas"><div class="wrap">
+    <div class="eyebrow">Etapa 1 · Síntese e dispersão</div>
+    <h2>Variação entre pessoas × entre pesquisas</h2>
+    <div class="grid g-7-5" style="align-items:center">
+      <div class="eq hl"><div class="tex d" data-fn="mean"></div><p class="muted" style="margin:4px 0 0;font-size:14px">Codificando <span data-v="nameL">Montanha</span> = 1 e <span data-v="nameO">Praia</span> = 0, a média é a <b>própria proporção</b> de <span data-v="nameL">Montanha</span>.</p></div>
+      <div class="chart-box"><div id="chBern1"></div></div>
+    </div>
+    <div class="grid g2 mt">
+      <div class="card ca"><h3>Desvio padrão (s)</h3><div class="big">≈ <span data-v="sTxt">0,50</span></div><div class="tex" data-fn="s2"></div><p>Quão diferentes os entrevistados são <b>entre si</b>. <b>Não diminui</b> com amostras maiores.</p></div>
+      <div class="card cb"><h3>Erro padrão (EP)</h3><div class="big">≈ <span data-v="epPP">1,53 p.p.</span></div><div class="tex" data-tex="EP=\dfrac{s}{\sqrt n}"></div><p>Quanto p̂ <b>mudaria</b> se repetíssemos a pesquisa várias vezes. <b>Cai com √n</b>.</p></div>
+    </div>
+    <div class="eq hl mt"><div class="tex d" data-fn="ep"></div></div>
+  </div></section>
+
+  <!-- 11. BERNOULLI -->
+  <section class="slide" id="s-bernoulli" data-need="prop" data-title="Ensaio de Bernoulli"><div class="wrap">
+    <div class="eyebrow">Contagem · 1</div>
+    <h2>Uma pessoa = um ensaio de Bernoulli</h2>
+    <p class="lead">Como na etapa anterior, codificamos <b>X<sub>i</sub> = 1 se a pessoa escolhe <span data-v="nameL">Montanha</span></b> e 0 se escolhe <span data-v="nameO">Praia</span>. Cada entrevista é uma “moeda viciada” com chance p de dar 1.</p>
+    <div>
+      <div>
+        <div class="eq"><div class="tex d" data-tex="X_i\in\{0,1\}\;\Rightarrow\;X_i\sim\operatorname{Bernoulli}(p)"></div><div class="tex d" data-tex="P(X=x)=p^{x}(1-p)^{1-x},\qquad x\in\{0,1\}"></div></div>
+        <div class="eq"><div class="tex d" data-tex="E[X]=0\cdot(1-p)+1\cdot p=\mathbf{p}"></div><div class="tex d" data-tex="\operatorname{Var}[X]=E[X^2]-E[X]^2=p-p^2=\mathbf{p(1-p)}"></div><p class="muted" style="margin:4px 0 0;font-size:14px">A média é a própria chance de escolher <span data-v="nameL">Montanha</span>; a variância é máxima em p = 0,5.</p></div>
+        <div class="eq hl"><div class="tex d" data-fn="bernNum"></div></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 12. BINOMIAL -->
+  <section class="slide" id="s-binomial" data-need="prop" data-title="Binomial: a contagem"><div class="wrap">
+    <div class="eyebrow">Contagem · 2</div>
+    <h2>Média e variância da contagem</h2>
+    <p class="lead">Somando as respostas de todos os entrevistados, obtemos a contagem de votos em <span data-v="nameL">Montanha</span>. Cada X<sub>i</sub> é Bernoulli(p) e independente, logo a soma é Binomial:</p>
+    <div class="eq" style="text-align:center"><div class="tex d" data-tex="K=X_1+X_2+\cdots+X_n\sim\operatorname{Binomial}(n,p),\qquad X_i\sim\operatorname{Bernoulli}(p)"></div><div class="tex d" data-tex="P(K=k)=\binom{n}{k}\,p^{k}(1-p)^{n-k},\qquad k=0,1,\dots,n"></div></div>
+    <div class="grid g2">
+      <div class="card"><h3>Média: soma das médias</h3><div class="tex d" data-tex="E[K]=\sum_{i=1}^{n}E[X_i]=n\,p"></div><div class="tex d" data-fn="EK"></div><div class="tex d" data-fn="EK50"></div></div>
+      <div class="card ca"><h3>Variância: soma das variâncias</h3><div class="tex d" data-tex="\operatorname{Var}[K]=\sum_{i=1}^{n}\operatorname{Var}[X_i]=n\,p\,(1-p)"></div><div class="tex d" data-fn="VK"></div><p>Ou seja: <b><span data-v="kB">545</span> ± <span data-v="sdKr">16</span> votos</b> em <span data-v="nameL">Montanha</span>.</p></div>
+    </div>
+    <div class="note"><b>Por que as variâncias somam?</b> <span class="tex" data-tex="\operatorname{Var}(X+Y)=\operatorname{Var}X+\operatorname{Var}Y+2\operatorname{Cov}(X,Y)"></span>. Com <b>independência</b>, Cov = 0 — é aqui que aquele pilar do início entra na conta.</div>
+    <div class="chart-box mt"><h4>Distribuição de K (votos em <span data-v="nameL">Montanha</span>) se p = p̂</h4><div id="chBinom"></div>
+      <div class="legend"><span><i style="background:var(--b)"></i>P(K = k) exata</span><span><i class="ln" style="background:var(--ink)"></i>aproximação Normal</span><span><i class="dash" style="border-color:var(--a)"></i>empate (n/2)</span></div></div>
+  </div></section>
+
+  <!-- 13. ESCALAS -->
+  <section class="slide" id="s-escalas" data-need="prop" data-title="Três escalas, p̂"><div class="wrap">
+    <div class="eyebrow">Erro padrão · 1</div>
+    <h2>Três escalas, três desvios</h2>
+    <div class="grid g3">
+      <div class="card"><h3>Uma pessoa</h3><div class="big" data-v="sTxt">0,50</div><div class="tex" data-tex="DP[X]=\sqrt{p(1-p)}"></div><p>Cada resposta é 0 ou 1: varia muito.</p></div>
+      <div class="card ca"><h3>A contagem</h3><div class="big"><span data-v="sdK1">16,3</span> votos</div><div class="tex" data-tex="DP[K]=\sqrt{n\,p(1-p)}"></div><p>Quanto o total de votos oscila.</p></div>
+      <div class="card cb"><h3>A proporção</h3><div class="big" data-v="epPP">1,53 p.p.</div><div class="tex" data-tex="EP[\hat p]=\dfrac{DP[K]}{n}"></div><p>Quanto o percentual oscila: o <b>erro padrão</b>.</p></div>
+    </div>
+    <div class="eyebrow mt2" style="margin-top:46px">Erro padrão · 2</div>
+    <h2><span class="tex" data-tex="\hat p"></span>: estimador antes, estimativa depois</h2>
+    <div class="eq" style="text-align:center"><div class="tex d" data-tex="\hat p=\frac{K}{n}"></div></div>
+    <div class="grid g2">
+      <div class="card"><h3>Antes da coleta · estimador</h3><p>p̂ é uma <b>variável aleatória</b>: ainda não sabemos quem será sorteado.</p><p>• Em média <b>acerta o alvo</b> p (não viesado).</p><p>• Oscila em torno dele com o <b>erro padrão</b>, que diminui conforme n cresce.</p></div>
+      <div class="card ca"><h3>Depois da coleta · estimativa</h3><p>p̂ vira um <b>número</b>: o que esta amostra mostrou.</p><div class="tex d" data-fn="phatNum"></div><div class="big">≈ <span data-v="ph3">0,510</span></div><p class="muted"><span data-v="pBpct1">51,0%</span> para a <span data-v="nameL">Montanha</span>.</p></div>
+    </div>
+  </div></section>
+
+  <!-- 14. SIMULAÇÃO -->
+  <section class="slide" id="s-simulacao" data-need="prop" data-title="Pesquisa repetida"><div class="wrap">
+    <div class="eyebrow">Erro padrão · 3</div>
+    <h2>Se a pesquisa fosse repetida várias vezes</h2>
+    <p class="lead">Simulamos <b data-v="simM">10.000</b> pesquisas independentes, cada uma com n = <b data-v="n">1.068</b> pessoas, supondo que a proporção real seja <b data-v="pBpct1">51,0%</b>.</p>
+    <div class="row" style="margin-bottom:14px"><button class="btn primary" id="btnSim">🎲 Rodar 10.000 pesquisas</button><span class="muted" style="font-size:13px" id="simInfo"></span></div>
+    <div class="grid g2">
+      <div class="chart-box"><h4>Distribuição de p̂ nas pesquisas simuladas</h4><div id="chSimHist"></div>
+        <div class="legend"><span><i style="background:var(--conf)"></i>pesquisas simuladas</span><span><i class="ln" style="background:var(--ink)"></i>Normal(p, EP)</span><span><i class="ln" style="background:var(--danger)"></i>proporção real</span><span><i class="dash" style="border-color:var(--muted)"></i>p ± z·EP</span></div></div>
+      <div class="chart-box"><h4>Erro padrão observado × nº de repetições</h4><div id="chSimConv"></div>
+        <div class="legend"><span><i class="ln" style="background:var(--a)"></i>DP(p̂) observado</span><span><i class="dash" style="border-color:var(--danger)"></i>EP teórico = <span data-v="ep4">0,0153</span></span></div></div>
+    </div>
+    <div class="callout">Cada pesquisa gera um valor diferente de p̂, mas as estimativas se distribuem de forma aproximadamente <b>Normal</b> em torno da proporção real, com erro padrão de cerca de <b data-v="ep4">0,0153</b>. <span id="simCover"></span> À medida que aumentamos o número de repetições, o erro padrão observado se estabiliza no valor teórico.</div>
+  </div></section>
+
+  <!-- 15. VEROSSIMILHANÇA -->
+  <section class="slide" id="s-veross" data-need="prop" data-title="Verossimilhança"><div class="wrap">
+    <div class="eyebrow">Verossimilhança · 1</div>
+    <h2>A mesma fórmula, a pergunta invertida</h2>
+    <p class="lead">Antes, fixávamos p e perguntávamos <b>“qual a chance de observar <span data-v="kB">545</span> votos?”</b>. Agora os dados estão fixos (<b>n = <span data-v="n">1.068</span>, k = <span data-v="kB">545</span></b>) e perguntamos <b>“qual valor de p torna esses dados mais plausíveis?”</b></p>
+    <div class="grid g2">
+      <div class="chart-box"><h4>Probabilidade</h4><p class="cap"><b>p fixo</b> = <span data-v="ph3">0,510</span> → que contagem k esperar?</p><div id="chProb"></div></div>
+      <div class="chart-box"><h4>Verossimilhança</h4><p class="cap"><b>k fixo</b> = <span data-v="kB">545</span> → qual p explica melhor?</p><div id="chLik0"></div></div>
+    </div>
+    <div class="eyebrow" style="margin-top:46px">Verossimilhança · 2</div>
+    <h2>Encontrando o máximo, passo a passo</h2>
+    <div class="step"><div class="num">1</div><div class="eq"><div class="tex d" data-tex="L(p)=\prod_{i=1}^{n}p^{x_i}(1-p)^{1-x_i}=p^{k}(1-p)^{n-k}"></div><p><b>Função de verossimilhança:</b> o produto das probabilidades de Bernoulli de cada resposta observada (independência), vista como função de p.</p></div></div>
+    <div class="step"><div class="num">2</div><div class="eq"><div class="tex d" data-tex="\ell(p)=\ln L(p)=k\ln p+(n-k)\ln(1-p)"></div><p><b>Log-verossimilhança:</b> o log transforma o produto em soma e facilita a derivação (não muda onde fica o máximo).</p></div></div>
+    <div class="step"><div class="num">3</div><div class="eq"><div class="tex d" data-tex="\frac{d\ell(p)}{dp}=\frac{k}{p}-\frac{n-k}{1-p}=0\;\Longrightarrow\;k(1-p)=(n-k)\,p\;\Longrightarrow\;\hat p=\frac{k}{n}"></div><p>Derivada da log-verossimilhança igual a zero: o ponto mais alto da curva.</p></div></div>
+    <div class="step"><div class="num">4</div><div class="eq"><div class="tex d" data-tex="\frac{d^{2}\ell(p)}{dp^{2}}=-\frac{k}{p^{2}}-\frac{n-k}{(1-p)^{2}}<0"></div><p>Segunda derivada negativa: é de fato um <b>máximo</b>.</p></div></div>
+    <div class="step"><div class="num">5</div><div class="eq hl"><div class="tex d" data-fn="ellNum"></div></div></div>
+    <div class="note">O valor mais plausível de p <b>é a proporção observada na amostra</b>, p̂ = k/n — e quanto <b>mais fechada a curva, menor o erro padrão</b>.</div>
+  </div></section>
+
+  <!-- 16. CANDIDATOS -->
+  <section class="slide" id="s-candidatos" data-need="prop" data-title="Testando candidatos"><div class="wrap">
+    <div class="eyebrow">Verossimilhança · 3</div>
+    <h2>Testando candidatos para p</h2>
+    <div class="grid g-7-5">
+      <div class="tbl-wrap"><table class="data"><thead><tr><th>p candidato (<span data-v="nameL">B</span>)</th><th>L(p)/L(p̂)</th><th>Leitura</th></tr></thead><tbody id="tbCand"></tbody></table></div>
+      <div>
+        <p>Dividimos pelo valor máximo para comparar: <b>1,00</b> = o candidato que <b>melhor explica</b> os <span data-v="kB">545</span> votos.</p>
+        <div class="eq hl"><div class="tex d" data-tex="R(p)=\frac{L(p)}{L(\hat p)}=\Big(\frac{p}{\hat p}\Big)^{k}\Big(\frac{1-p}{1-\hat p}\Big)^{n-k}"></div></div>
+        <div class="note" data-v="candNote"></div>
+      </div>
+    </div>
+    <div class="eyebrow" style="margin-top:46px">Etapa 3 · Máxima verossimilhança</div>
+    <h2>O melhor palpite é a própria amostra</h2>
+    <div class="grid g2">
+      <div class="chart-box"><h4>Verossimilhança relativa L(p)/L(p̂)</h4><div id="chLikRel"></div>
+        <div class="legend"><span><i class="ln" style="background:var(--a)"></i>L(p)/L(p̂)</span><span><i class="ln" style="background:var(--danger)"></i>p̂</span><span><i class="dash" style="border-color:var(--muted)"></i>empate (50%)</span><span><i class="dash" style="border-color:var(--ok)"></i>corte IC</span></div></div>
+      <div class="chart-box"><h4>Log-verossimilhança ℓ(p) − ℓ(p̂)</h4><div id="chLogLik"></div><p class="cap">Uma parábola “de cabeça para baixo”: a curvatura dela no topo é a informação sobre p.</p></div>
+    </div>
+  </div></section>
+
+  <!-- 17. CURVATURA -->
+  <section class="slide" id="s-curvatura" data-need="prop" data-title="Curvatura e EP"><div class="wrap">
+    <div class="eyebrow">Verossimilhança · 5 · Onde tudo se encontra</div>
+    <h2>A curvatura devolve o erro padrão</h2>
+    <div class="grid g-7-5">
+      <div class="chart-box"><h4>Mesmo p̂, amostras de tamanhos diferentes</h4><div id="chCurv"></div><div class="legend" id="lgCurv"></div></div>
+      <div>
+        <div class="eq hl"><div class="tex d" data-fn="fisher"></div></div>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>n</th><th>I(p̂)</th><th>EP</th></tr></thead><tbody id="tbCurv"></tbody></table></div>
+      </div>
+    </div>
+    <div class="callout">Ao aumentar a amostra, a curva de verossimilhança vai se <b>estreitando</b> em torno de p̂. Essa curvatura é a <b>informação observada</b>, e o erro padrão é o inverso da sua raiz. Quadruplicando n, a informação quadruplica e o erro padrão cai pela metade. Com isso, o ponto de empate (50%) fica cada vez mais distante da região plausível para p.</div>
+  </div></section>
+
+  <!-- 18. IC -->
+  <section class="slide" id="s-ic" data-need="prop" data-title="Intervalo de confiança"><div class="wrap">
+    <div class="eyebrow">Etapa 4 · Intervalo de confiança</div>
+    <h2 data-v="icTitle">Margem real de ±3,0 p.p. — e ainda é empate</h2>
+    <div class="grid g-7-5">
+      <div class="chart-box"><h4>Intervalos de <span data-v="confPct">95%</span> para cada destino</h4><div id="chIC"></div>
+        <div class="legend"><span><i style="background:var(--a-soft);border:1px solid var(--a)"></i>planejado ±<span data-v="epsTxt">3</span> p.p.</span><span><i style="background:var(--accent)"></i>real ±<span data-v="moeTxt">3,0</span> p.p. (n = <span data-v="n">1.068</span>)</span></div></div>
+      <div>
+        <div class="eq hl"><div class="tex d" data-tex="IC_{1-\alpha}(p)=\hat p\pm z_{\alpha/2}\sqrt{\frac{\hat p(1-\hat p)}{n}}"></div></div>
+        <div class="eq"><div class="tex d" data-fn="icNum"></div></div>
+      </div>
+    </div>
+    <div class="callout" data-v="icTxt"></div>
+  </div></section>
+
+  <!-- 19. FINAL -->
+  <section class="slide" id="s-final" data-need="prop" data-title="Mensagem final"><div class="wrap">
+    <div class="final">
+      <svg class="pano-final" viewBox="0 0 1200 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><use href="#pano"/></svg>
+      <div class="eyebrow" style="color:#9cc6ff">Conclusão</div>
+      <h3 data-v="finalHead">Uma parte bem escolhida fala sobre o todo.</h3>
+      <p data-v="finalTxt"></p>
+    </div>
+  </div></section>
+
+  <!-- 20. REFERÊNCIAS -->
+  <section class="slide" id="s-refs" data-title="Referências"><div class="wrap">
+    <div class="eyebrow">Referências</div>
+    <h2>Referências bibliográficas</h2>
+    <ul class="refs">
+      <li>BOLFARINE, H.; BUSSAB, W. O. <i>Elementos de amostragem</i>. São Paulo: Blucher, 2005.</li>
+      <li>BUSSAB, W. O.; MORETTIN, P. A. <i>Estatística básica</i>. 9. ed. São Paulo: Saraiva, 2017.</li>
+      <li>CASELLA, G.; BERGER, R. L. <i>Statistical inference</i>. 2. ed. Pacific Grove: Duxbury, 2002.</li>
+      <li>COCHRAN, W. G. <i>Sampling techniques</i>. 3. ed. New York: John Wiley &amp; Sons, 1977.</li>
+      <li>MAGALHÃES, M. N.; LIMA, A. C. P. <i>Noções de probabilidade e estatística</i>. 7. ed. São Paulo: Edusp, 2015.</li>
+      <li>PAWITAN, Y. <i>In all likelihood: statistical modelling and inference using likelihood</i>. Oxford: Oxford University Press, 2001.</li>
+      <li>HUNTER, J. D. Matplotlib: a 2D graphics environment. <i>Computing in Science &amp; Engineering</i>, v. 9, n. 3, p. 90–95, 2007.</li>
+    </ul>
+    <a class="gh-link" href="https://github.com/Pedro2lourenco/Amostragem-Estat-stica" target="_blank" rel="noopener noreferrer" aria-label="Abrir repositório Amostragem Estatística no GitHub">
+      <svg class="gh-logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+      </svg>
+      <div class="gh-info">
+        <div class="gh-eyebrow">Repositório no GitHub</div>
+        <div class="gh-title">Amostragem Estatística</div>
+        <div class="gh-url">https://github.com/Pedro2lourenco/Amostragem-Estat-stica</div>
+      </div>
+      <svg class="gh-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 17L17 7M7 7h10v10"/>
+      </svg>
+    </a>
+  </div></section>
+
+</main>
+
+<!-- ================= PYTHON: executado no navegador pelo Pyodide ================= -->
+<script type="text/x-python" id="pySrc">
+# @@ base
+import io, json, math, logging
+from types import SimpleNamespace
+from statistics import NormalDist
+import numpy as np
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter, ScalarFormatter
+logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
+
+ND = NormalDist()
+TEMAS = {
+    False: dict(tinta='#10293f', texto='#33414f', suave='#6b7684', grade='#e6e3dc', acento='#2563b8',
+                a='#1f8fc4', b='#9a6332', erro='#d94848', conf='#9fd0ee', ok='#1f9d6b'),
+    True:  dict(tinta='#e9eff6', texto='#c3cedb', suave='#8696a7', grade='#1d2f42', acento='#6aa8f5',
+                a='#4fb3e3', b='#c98d58', erro='#f06b6b', conf='#2f5f84', ok='#3cc28e'),
+}
+GRAFICOS, ALTURAS = {}, {}
+
+def grafico(nome, altura):
+    def registrar(f):
+        GRAFICOS[nome], ALTURAS[nome] = f, altura
+        return f
+    return registrar
+
+def arred(x):
+    return math.floor(x + 0.5)
+
+def fmt(x, d=0):
+    return f'{x:,.{d}f}'.replace(',', '_').replace('.', ',').replace('_', '.')
+
+def sgn(x, d=1):
+    return ('+' if x > 0 else '−' if x < 0 else '') + fmt(abs(x), d)
+
+def normal_pdf(x, mu=0.0, sd=1.0):
+    return np.exp(-0.5 * ((np.asarray(x, dtype=float) - mu) / sd) ** 2) / (sd * math.sqrt(2 * math.pi))
+
+_lgamma = np.vectorize(math.lgamma)
+
+def binom_pmf(k, n, p):
+    k = np.asarray(k, dtype=float)
+    return np.exp(math.lgamma(n + 1) - _lgamma(k + 1) - _lgamma(n - k + 1)
+                  + k * math.log(p) + (n - k) * math.log(1 - p))
+
+def rel_lik(p, n, p_hat):
+    p = np.clip(np.asarray(p, dtype=float), 1e-9, 1 - 1e-9)
+    return np.exp(n * (p_hat * np.log(p / p_hat) + (1 - p_hat) * np.log((1 - p) / (1 - p_hat))))
+
+def faixa(n, p_hat, mult):
+    ep = math.sqrt(max(p_hat * (1 - p_hat), 1e-6) / n)
+    return max(0.0005, p_hat - mult * ep), min(0.9995, p_hat + mult * ep)
+
+def estilo(T):
+    plt.rcParams.update({
+        'svg.fonttype': 'none', 'font.family': ['Inter', 'DejaVu Sans'], 'font.size': 10.5,
+        'text.color': T.texto, 'axes.labelcolor': T.texto, 'axes.edgecolor': T.suave,
+        'xtick.color': T.suave, 'ytick.color': T.suave, 'axes.grid': True, 'grid.color': T.grade,
+        'axes.spines.top': False, 'axes.spines.right': False, 'axes.axisbelow': True,
+        'axes.facecolor': 'none', 'figure.facecolor': 'none', 'legend.frameon': False,
+    })
+
+def desenhar(nome, params_json, escuro):
+    '''Chamada pelo JavaScript: devolve o gráfico pedido como SVG.'''
+    T = SimpleNamespace(**TEMAS[bool(escuro)])
+    estilo(T)
+    plt.rcParams['svg.hashsalt'] = nome
+    R = calcular(json.loads(params_json))
+    fig, ax = plt.subplots(figsize=(7.2, ALTURAS[nome]))
+    GRAFICOS[nome](ax, R, T)
+    for eixo in (ax.xaxis, ax.yaxis):                # vírgula decimal nos eixos numéricos
+        if isinstance(eixo.get_major_formatter(), ScalarFormatter):
+            eixo.set_major_formatter(FuncFormatter(lambda v, _: ('%g' % v).replace('.', ',').replace('-', '−')))
+    buf = io.StringIO()
+    fig.savefig(buf, format='svg', bbox_inches='tight', transparent=True)
+    plt.close(fig)
+    return buf.getvalue()
+
+# @@ calcular
+def calcular(P):
+    '''Os mesmos cálculos do painel: P traz N, conf, eps, pB e o tamanho de amostra escolhido.'''
+    conf = P['conf'] / 100
+    alpha = 1 - conf
+    z = ND.inv_cdf(1 - alpha / 2)                    # valor crítico z_(α/2)
+    e = P['eps'] / 100
+    N = P['N']
+    n0 = z ** 2 * 0.25 / e ** 2                      # pior caso: p = 0,5
+    n_plan = min(N, math.ceil(n0 - 1e-9))
+    n = max(2, min(N, arred(P['nCustom']))) if P['useN'] else n_plan
+    pB = P['pB'] / 100                               # proporção observada da opção B
+    lider_B = pB >= 0.5                              # referência (X = 1) = opção à frente
+    p = pB if lider_B else 1 - pB                    # p̂ da opção à frente
+    L, O = (P['nameB'], P['nameA']) if lider_B else (P['nameA'], P['nameB'])
+    kB = arred(n * p)                                # votos da opção à frente
+    s2 = max(p * (1 - p), 1e-9)
+    ep = math.sqrt(s2 / n)                           # erro padrão
+    moe = z * ep
+    return SimpleNamespace(conf_pct=P['conf'], alpha=alpha, z=z, e=e, N=N, n=n, p=p, kB=kB, kA=n - kB,
+                           pA=1 - pB, pB=pB, L=L, O=O, corL='b' if lider_B else 'a', corO='a' if lider_B else 'b',
+                           s2=s2, ep=ep, moe=moe, empate=p - moe <= 0.5,
+                           A=P['nameA'], B=P['nameB'], sim=P.get('sim', 0))
+
+# @@ chVar
+@grafico('chVar', 2.6)
+def g_variabilidade(ax, R, T):
+    p = np.linspace(0, 1, 401)
+    ax.fill_between(p, p * (1 - p), color=T.a, alpha=0.15)
+    ax.plot(p, p * (1 - p), color=T.a, lw=2.5)
+    ax.plot(0.5, 0.25, 'o', color=T.erro, ms=7)
+    ax.annotate('máximo 0,25', (0.5, 0.25), xytext=(0, 8), textcoords='offset points',
+                ha='center', fontweight='bold', color=T.tinta)
+    ax.plot(R.p, R.s2, 'o', color=getattr(T, R.corL), ms=8, mec='white', mew=1.5)
+    ax.annotate(f'p̂ = {fmt(R.p, 2)}', (R.p, R.s2), xytext=(0, -16), textcoords='offset points', ha='center')
+    ax.set(xlabel='p', ylabel='p(1 − p)', xlim=(0, 1), ylim=(0, 0.29))
+
+# @@ chNormal
+@grafico('chNormal', 3.4)
+def g_normal(ax, R, T):
+    z = R.z
+    lim = max(4, math.ceil(z + 0.8))
+    x = np.linspace(-lim, lim, 800)
+    y = normal_pdf(x)
+    centro = np.abs(x) <= z
+    ax.fill_between(x, y, where=centro, interpolate=True, color=T.conf)                # confiança
+    ax.fill_between(x, y, where=~centro, interpolate=True, color=T.erro, alpha=0.55)  # rejeição
+    ax.plot(x, y, color=T.tinta, lw=2)
+    for v in (-z, z):
+        ax.axvline(v, color=T.suave, ls='--', lw=1.2)
+        ax.text(v, 0.405, sgn(v, 3), ha='center', fontweight='bold', color=T.tinta)
+    conf_txt = fmt(R.conf_pct, 1 if R.conf_pct % 1 else 0) + '%'
+    ax.text(0, 0.16, conf_txt, ha='center', fontsize=17, fontweight='bold', color=T.tinta)
+    for lado in (-1, 1):
+        ax.text(lado * (z + lim) / 2, 0.05, fmt(R.alpha / 2 * 100, 2) + '%',
+                ha='center', fontweight='bold', color=T.erro)
+    ax.set(xlabel='z', xlim=(-lim, lim), ylim=(0, 0.43))
+
+# @@ chMargin
+@grafico('chMargin', 3.6)
+def g_margem(ax, R, T):
+    xmax = max(1e4, 10 ** math.ceil(math.log10(R.n * 3)))
+    n = np.logspace(1, math.log10(xmax), 300)
+    margem = R.z * np.sqrt(0.25 / n) * 100           # margem cai com √n
+    ax.semilogx(n, margem, color=T.a, lw=2.6)
+    ax.fill_between(n, margem, color=T.a, alpha=0.12)
+    ax.axhline(R.e * 100, color=T.suave, ls='--')
+    ax.text(11, R.e * 100, f' ε = ±{fmt(R.e * 100, 1)} p.p.', va='bottom', color=T.suave)
+    marcas = np.array([10, 100, 500, 700, 1000])
+    ax.plot(marcas, R.z * np.sqrt(0.25 / marcas) * 100, 'o', color=T.a, ms=5)
+    atual = R.z * math.sqrt(0.25 / R.n) * 100
+    ax.plot(R.n, atual, 'o', color=T.erro, ms=10, mec='white', mew=2)
+    ax.annotate(f'n = {fmt(R.n)}\n±{fmt(atual, 2)} p.p.', (R.n, atual), xytext=(12, 22),
+                textcoords='offset points', fontweight='bold', color=T.erro)
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: fmt(v / 1000) + ' mil' if v >= 1000 else fmt(v)))
+    ax.set(xlabel='Tamanho da amostra (escala log)', ylabel='Margem (p.p.)', xlim=(8, xmax))
+    ax.set_ylim(0, None)
+
+# @@ chResult
+@grafico('chResult', 3.6)
+def g_resultado(ax, R, T):
+    vals = np.array([R.pA, R.pB]) * 100
+    m = R.moe * 100
+    x = np.array([0, 1])
+    ax.bar(x, vals, color=[T.a, T.b], width=0.55)
+    ax.bar(x, 2 * m, bottom=vals - m, width=0.66, fill=False, hatch='///', edgecolor=T.tinta, lw=1.2)  # ± margem
+    for xi, v in zip(x, vals):
+        ax.text(xi, min(100, v + m) + 1.5, f'{fmt(v, 1)}% ± {fmt(m, 1)}',
+                ha='center', fontweight='bold', color=T.tinta)
+    ax.axhline(50, color=T.tinta, ls='--', lw=1.2)
+    ax.set_xticks(x)
+    ax.set_xticklabels([R.A, R.B], fontweight='bold')
+    ax.set(ylabel='%', ylim=(0, min(100, vals.max() + m + 10)))
+    ax.xaxis.grid(False)
+
+# @@ chBern1
+def g_bernoulli(ax, R, T):
+    vals = [1 - R.p, R.p]                            # X = 1: opção à frente
+    ax.bar([0, 1], vals, color=[getattr(T, R.corO), getattr(T, R.corL)], width=0.6)
+    for i, v in enumerate(vals):
+        ax.text(i, v + 0.03, fmt(v, 2), ha='center', fontweight='bold', color=T.tinta)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels([f'X = 0 · {R.O}', f'X = 1 · {R.L}'])
+    ax.set(ylim=(0, 1.1), yticks=[])
+    ax.spines['left'].set_visible(False)
+    ax.xaxis.grid(False)
+
+grafico('chBern1', 2.4)(g_bernoulli)
+
+# @@ chBinom
+@grafico('chBinom', 3.2)
+def g_binomial(ax, R, T):
+    n, p = R.n, R.p
+    mu, sd = n * p, math.sqrt(n * p * (1 - p))       # E[K] = np, DP[K] = √(np(1−p))
+    a, b = max(0, math.floor(mu - 4.2 * sd)), min(n, math.ceil(mu + 4.2 * sd))
+    empate_visivel = abs(n / 2 - mu) < 6 * sd
+    if empate_visivel:
+        a, b = max(0, min(a, math.floor(n / 2 - sd))), min(n, max(b, math.ceil(n / 2 + sd)))
+    k = np.arange(a, b + 1)
+    pk = binom_pmf(k, n, p)
+    cor = getattr(T, R.corL)
+    ax.bar(k, pk, width=0.75, color=cor, alpha=0.6)
+    pk_obs = binom_pmf([R.kB], n, p)[0]
+    ax.bar([R.kB], [pk_obs], width=0.75, color=cor)
+    xx = np.linspace(a, b, 400)
+    ax.plot(xx, normal_pdf(xx, mu, sd), color=T.tinta, lw=2)  # aproximação Normal
+    if empate_visivel:
+        ax.axvline(n / 2, color=T.a, ls='--', lw=1.8)
+        ax.text(n / 2, pk.max() * 1.08, f'empate: {fmt(n / 2, 1 if n % 2 else 0)}',
+                ha='center', fontweight='bold', color=T.a)
+    ax.annotate(f'k = {fmt(R.kB)}', (R.kB, pk_obs), xytext=(0, 6), textcoords='offset points',
+                ha='center', fontweight='bold', color=cor)
+    ax.set(xlabel=f'k = votos em {R.L}', ylabel='P(K = k)', ylim=(0, pk.max() * 1.18))
+
+# @@ chSimHist chSimConv
+_SIM = {}
+
+def amostras_simuladas(R, M=10_000):
+    '''Simula M pesquisas de tamanho n (Monte Carlo) e devolve os p̂ obtidos.'''
+    chave = (R.n, R.p, R.sim)
+    if chave not in _SIM:
+        _SIM.clear()
+        _SIM[chave] = np.random.default_rng().binomial(R.n, R.p, size=M) / R.n
+    return _SIM[chave]
+
+@grafico('chSimHist', 3.2)
+def g_sim_hist(ax, R, T):
+    p_sim = amostras_simuladas(R)
+    lo, hi = R.p - 4.5 * R.ep, R.p + 4.5 * R.ep
+    ax.hist(p_sim, bins=40, range=(lo, hi), density=True, color=T.conf, rwidth=0.88)
+    xx = np.linspace(lo, hi, 400)
+    ax.plot(xx, normal_pdf(xx, R.p, R.ep), color=T.tinta, lw=2)
+    ax.axvline(R.p, color=T.erro, lw=2)
+    for v in (R.p - R.z * R.ep, R.p + R.z * R.ep):
+        ax.axvline(v, color=T.suave, ls='--')
+    dentro = np.mean(np.abs(p_sim - R.p) <= R.z * R.ep)
+    ax.set(xlabel=f'p̂ ({R.L})', ylabel='Densidade', xlim=(lo, hi),
+           title=f'{fmt(dentro * 100, 1)}% das pesquisas dentro de ±z·EP')
+
+@grafico('chSimConv', 3.2)
+def g_sim_conv(ax, R, T):
+    p_sim = amostras_simuladas(R)
+    m = np.arange(1, p_sim.size + 1)
+    media = np.cumsum(p_sim) / m
+    var = (np.cumsum(p_sim ** 2) - m * media ** 2) / np.maximum(m - 1, 1)
+    dp = np.sqrt(np.clip(var, 0, None))              # DP(p̂) acumulado
+    ax.semilogx(m[9:], dp[9:], color=T.a, lw=2)
+    ax.axhline(R.ep, color=T.erro, ls='--', lw=1.6)  # EP teórico
+    ax.set(xlabel='Número de repetições da pesquisa', ylabel='DP(p̂)', xlim=(10, p_sim.size))
+
+# @@ chProb
+@grafico('chProb', 2.5)
+def g_probabilidade(ax, R, T):
+    n, p = R.n, R.p
+    mu, sd = n * p, math.sqrt(n * p * (1 - p))
+    k = np.arange(max(0, math.floor(mu - 4.2 * sd)), min(n, math.ceil(mu + 4.2 * sd)) + 1)
+    ax.bar(k, binom_pmf(k, n, p), width=0.7, color=T.a)   # p fixo → distribuição de k
+    ax.set(xlabel='k (contagem)', yticks=[])
+    ax.spines['left'].set_visible(False)
+
+# @@ chLik0
+@grafico('chLik0', 2.5)
+def g_veross_simples(ax, R, T):
+    lo, hi = faixa(R.n, R.p, 4.5)
+    p = np.linspace(lo, hi, 400)
+    ax.plot(p, rel_lik(p, R.n, R.p), color=T.tinta, lw=2.4)  # k fixo → plausibilidade de cada p
+    ax.plot(R.p, 1, 'o', color=T.b, ms=9)
+    ax.text(R.p, 0.5, f'p̂ = {fmt(R.p, 3)}', ha='center', fontweight='bold', color=T.tinta)
+    ax.set(xlabel='p (candidato)', ylim=(0, 1.12), yticks=[])
+    ax.spines['left'].set_visible(False)
+
+# @@ chLikRel
+@grafico('chLikRel', 3.2)
+def g_veross_relativa(ax, R, T):
+    lo, hi = faixa(R.n, R.p, 5)
+    p = np.linspace(lo, hi, 500)
+    L = rel_lik(p, R.n, R.p)
+    corte = math.exp(-R.z ** 2 / 2)                  # corte do IC: e^(−z²/2)
+    ax.fill_between(p, L, color=T.a, alpha=0.15)
+    ax.plot(p, L, color=T.a, lw=2.5)
+    ax.axhline(corte, color=T.ok, ls='--', lw=1.6)
+    ax.text(hi, corte + 0.03, f'corte {fmt(corte, 3)}', ha='right', color=T.ok)
+    ax.axvline(R.p, color=T.erro, lw=2)
+    if lo < 0.5 < hi:
+        l50 = float(rel_lik(0.5, R.n, R.p))
+        ax.axvline(0.5, color=T.suave, ls=':', lw=1.6)
+        ax.plot(0.5, l50, 'o', color=T.suave)
+        ax.annotate(f'50%: {fmt(l50, 2)}', (0.5, l50), xytext=(-6 if R.p > 0.5 else 6, 8),
+                    textcoords='offset points', ha='right' if R.p > 0.5 else 'left', fontweight='bold')
+    ax.set(xlabel='p', ylabel='L(p) / L(p̂)', ylim=(0, 1.08))
+
+# @@ chLogLik
+@grafico('chLogLik', 3.2)
+def g_log_veross(ax, R, T):
+    lo, hi = faixa(R.n, R.p, 5)
+    p = np.linspace(lo, hi, 500)
+    ell = np.log(np.maximum(rel_lik(p, R.n, R.p), 1e-300))   # ℓ(p) − ℓ(p̂)
+    ax.plot(p, ell, color=T.a, lw=2.5)
+    ax.axhline(-R.z ** 2 / 2, color=T.ok, ls='--', lw=1.4)
+    ax.axvline(R.p, color=T.erro, lw=2)
+    if lo < 0.5 < hi:
+        ax.axvline(0.5, color=T.suave, ls=':', lw=1.6)
+    ax.set(xlabel='p', ylabel='ℓ(p) − ℓ(p̂)', ylim=(-14, 1))
+
+# @@ chCurv
+@grafico('chCurv', 3.3)
+def g_curvatura(ax, R, T):
+    ns = list(dict.fromkeys(v for v in (arred(R.n / 10), arred(R.n / 4), R.n, R.n * 4, R.n * 16) if v >= 10))
+    cores = ['#7b5ea7', '#4f6fb8', T.erro, '#2a9d8f', '#9fbf3b']
+    lo, hi = faixa(ns[0], R.p, 3.4)
+    p = np.linspace(lo, hi, 500)
+    for i, n in enumerate(ns):                       # mesmo p̂, n diferentes
+        ax.plot(p, rel_lik(p, n, R.p), color=cores[i % 5], lw=3.2 if n == R.n else 2)
+    ax.axvline(R.p, color=T.erro, lw=1.2, alpha=0.6)
+    if lo < 0.5 < hi:
+        ax.axvline(0.5, color=T.suave, ls=':', lw=1.6)
+    ax.set(xlabel='p', ylabel='L(p) / L(p̂)', ylim=(0, 1.08))
+
+# @@ chIC
+@grafico('chIC', 2.7)
+def g_ic_destinos(ax, R, T):
+    m, e = R.moe * 100, R.e * 100
+    for y, v, cor in [(2.1, R.pA * 100, T.a), (0.9, R.pB * 100, T.b)]:
+        ax.barh(y, 2 * e, left=v - e, height=0.72, color=T.a, alpha=0.14, edgecolor=T.a)  # planejado
+        ax.plot([v - m, v + m], [y, y], color=T.acento, lw=6, solid_capstyle='round')     # real
+        ax.plot(v, y, 'o', color=cor, ms=13, mec='white', mew=2.5)
+        for lim in (v - m, v + m):
+            ax.text(lim, y + 0.48, f'{fmt(lim, 1)}%', ha='center', fontsize=9)
+    ax.axvline(50, color=T.tinta, ls='--', lw=1.4)
+    ax.set_yticks([2.1, 0.9])
+    ax.set_yticklabels([R.A, R.B], fontweight='bold')
+    ax.set(ylim=(0, 3), xlabel='%')
+    ax.yaxis.grid(False)
+</script>
+
+<div class="pres-nav" id="presNav">
+  <button class="icon-btn" id="pvPrev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span id="pvCount">1 / 19</span>
+  <button class="icon-btn" id="pvNext" aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <button class="icon-btn" id="pvExit" aria-label="Sair da apresentação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ============ THEME ============ */
+const root=document.documentElement;
+function sGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function sSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+const saved=sGet('est-theme-pm'); if(saved) root.setAttribute('data-theme',saved);
+document.getElementById('themeBtn').onclick=()=>{
+  const cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  const nx=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nx); sSet('est-theme-pm',nx);
+};
+
+/* ============ MATH ============ */
+function invNorm(p){
+  const a=[-39.69683028665376,220.9460984245205,-275.9285104469687,138.357751867269,-30.66479806614716,2.506628277459239],
+  b=[-54.47609879822406,161.5858368580409,-155.6989798598866,66.80131188771972,-13.28068155288572],
+  c=[-0.007784894002430293,-0.3223964580411365,-2.400758277161838,-2.549732539343734,4.374664141464968,2.938163982698783],
+  d=[0.007784695709041462,0.3224671290700398,2.445134137142996,3.754408661907416];
+  const pl=0.02425; let q,r;
+  if(p<pl){q=Math.sqrt(-2*Math.log(p));return(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}
+  if(p<=1-pl){q=p-0.5;r=q*q;return(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}
+  q=Math.sqrt(-2*Math.log(1-p));return-(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+}
+function lgamma(x){const g=7,C=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5)return Math.log(Math.PI/Math.sin(Math.PI*x))-lgamma(1-x);x-=1;let a=C[0];const t=x+g+0.5;for(let i=1;i<9;i++)a+=C[i]/(x+i);return 0.5*Math.log(2*Math.PI)+(x+0.5)*Math.log(t)-t+Math.log(a);}
+const dnorm=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
+function logBinom(n,k,p){return lgamma(n+1)-lgamma(k+1)-lgamma(n-k+1)+k*Math.log(p)+(n-k)*Math.log(1-p);}
+function relLik(p,n,k){const ph=k/n;let v=0;if(k>0)v+=k*Math.log(p/ph);if(n-k>0)v+=(n-k)*Math.log((1-p)/(1-ph));return Math.exp(v);}
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+/* ============ FORMAT ============ */
+const nf=(x,d=0)=>Number.isFinite(x)?x.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}):'∞';
+const tn=(x,d=0)=>nf(x,d).replace(/,/g,'{,}');
+const pct=(x,d=1)=>nf(x*100,d)+'%';
+const sgn=(x,d=1)=>(x>0?'+':x<0?'−':'')+nf(Math.abs(x),d);
+function sci(x){if(x<=0)return'0';const e=Math.floor(Math.log10(x));const m=x/Math.pow(10,e);return e>=-2?tn(x,4):`${tn(m,1)}\\times10^{${e}}`;}
+function human(N){if(N>=1e9)return nf(N/1e9,N%1e9?1:0)+' bilhões';if(N>=2e6)return nf(N/1e6,N%1e6?1:0)+' milhões';if(N>=1e6)return nf(N/1e6,N%1e6?1:0)+' milhão';if(N>=1e3)return nf(N/1e3,N%1e3?1:0)+' mil';return nf(N);}
+function texEsc(s){return s.replace(/[\\{}$&#^_%~]/g,'');}
+
+/* ============ STATE ============ */
+/* Tudo começa zerado: população, confiança, margem e proporção são definidas durante a apresentação. */
+const DEF={N:null,conf:null,eps:null,pB:null,nameA:'Praia',nameB:'Montanha',useN:false,nCustom:1608};
+const S=Object.assign({},DEF);
+let R={};
+const okN=()=>S.N>0, okConf=()=>S.conf>0, okEps=()=>S.eps>0;
+const okParams=()=>okN()&&okConf()&&okEps();
+const okProp=()=>okParams()&&S.pB!=null;
+
+function compute(){
+  // valores efetivos (enquanto algo não foi definido, usa-se um valor provisório só para desenhar por trás do bloqueio)
+  const cv=okConf()?S.conf:95, ev=okEps()?S.eps:3, N=okN()?S.N:1000000, pBv=S.pB==null?50:S.pB;
+  const conf=cv/100, alpha=1-conf, z=invNorm(1-alpha/2), e=ev/100;
+  const n0=z*z*0.25/(e*e), nFin=n0/(1+(n0-1)/N), nReq=Math.min(N,Math.ceil(nFin-1e-9));
+  const nPlan=Math.min(N,Math.ceil(n0-1e-9));
+  const n=S.useN?Math.max(2,Math.min(N,Math.round(S.nCustom))):nPlan;
+  // a referência (X = 1) é sempre a opção que está à frente na pesquisa
+  const pA=1-pBv/100, pB=pBv/100, lead=pB>pA?'B':pA>pB?'A':null;
+  const ph=Math.max(pA,pB), qa=1-ph;
+  const kB=Math.round(n*ph), kA=n-kB, kL=n*ph;           // kB: votos da opção à frente; kA: da outra
+  const votesB=Math.round(n*pB), votesA=n-votesB;
+  const s2=Math.max(ph*(1-ph),1e-9), s=Math.sqrt(s2), ep=Math.sqrt(s2/n), epC=Math.sqrt(0.25/n);
+  const moe=z*ep, moeC=z*epC, D=ph-qa;
+  const tie=ph-moe<=0.5;                                   // os intervalos das duas opções se sobrepõem
+  R={cv,ev,conf,alpha,z,e,N,n0,nFin,nReq,nPlan,n,kA,kB,kL,votesA,votesB,pA,pB,ph,qa,s2,s,ep,epC,moe,moeC,D,tie,lead,
+     varK:n*s2,sdK:Math.sqrt(n*s2),fisher:n/s2,cut:Math.exp(-z*z/2),frac:n/N,fpc:Math.sqrt(Math.max(0,(N-n)/(N-1)))};
+}
+const nameOf=l=>l==='A'?S.nameA:S.nameB;
+const nameL=()=>R.lead==='B'?S.nameB:S.nameA, nameO=()=>R.lead==='B'?S.nameA:S.nameB;
+const colL=()=>R.lead==='B'?'var(--b)':'var(--a)', colO=()=>R.lead==='B'?'var(--a)':'var(--b)';
+
+/* ============ SVG CHART HELPER ============ */
+const NS='http://www.w3.org/2000/svg';let CID=0;
+function E(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+function chart(host,o){
+  host.innerHTML='';
+  const W=o.w||720,H=o.h||340,m=Object.assign({t:20,r:20,b:48,l:60},o.m||{});
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H}`,class:'chart',role:'img','aria-label':o.label||'gráfico'},host);
+  const id='ch'+(++CID), defs=E('defs',{},svg);
+  const iw=W-m.l-m.r, ih=H-m.t-m.b, [x0,x1]=o.x, [y0,y1]=o.y;
+  const L=Math.log10;
+  const X=o.xlog?v=>m.l+(L(v)-L(x0))/(L(x1)-L(x0))*iw:v=>m.l+(v-x0)/(x1-x0)*iw;
+  const Xi=o.xlog?px=>Math.pow(10,L(x0)+(px-m.l)/iw*(L(x1)-L(x0))):px=>x0+(px-m.l)/iw*(x1-x0);
+  const Y=v=>m.t+ih-(v-y0)/(y1-y0)*ih;
+  const cp=E('clipPath',{id:id+'c'},defs);E('rect',{x:m.l,y:m.t-2,width:iw,height:ih+2},cp);
+  const g=E('g',{},svg);
+  (o.yTicks||[]).forEach(t=>{if(o.yGrid!==false)E('line',{x1:m.l,x2:m.l+iw,y1:Y(t),y2:Y(t),class:'ch-grid'},g);E('text',{x:m.l-8,y:Y(t)+4,class:'ch-tick','text-anchor':'end'},g).textContent=(o.yFmt||String)(t);});
+  (o.xTicks||[]).forEach(t=>{E('text',{x:X(t),y:m.t+ih+19,class:'ch-tick','text-anchor':'middle'},g).textContent=(o.xFmt||String)(t);});
+  E('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih,class:'ch-axis'},g);
+  if(o.yAxis!==false&&o.yTicks)E('line',{x1:m.l,x2:m.l,y1:m.t,y2:m.t+ih,class:'ch-axis'},g);
+  if(o.xLabel)E('text',{x:m.l+iw/2,y:H-6,class:'ch-lab','text-anchor':'middle'},g).textContent=o.xLabel;
+  if(o.yLabel)E('text',{x:14,y:m.t+ih/2,class:'ch-lab','text-anchor':'middle',transform:`rotate(-90 14 ${m.t+ih/2})`},g).textContent=o.yLabel;
+  const plot=E('g',{'clip-path':`url(#${id}c)`},svg), top=E('g',{},svg);
+  const pd=pts=>pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(2)+','+Y(p[1]).toFixed(2)).join('');
+  const api={svg,defs,id,X,Y,m,iw,ih,plot,top,
+    path(pts,at,par){return E('path',Object.assign({d:pd(pts),fill:'none'},at),par||plot);},
+    area(pts,at,base){const b=base==null?y0:base;if(!pts.length)return;const d=pd(pts)+`L${X(pts[pts.length-1][0]).toFixed(2)},${Y(b)}L${X(pts[0][0]).toFixed(2)},${Y(b)}Z`;return E('path',Object.assign({d},at),plot);},
+    line(a,b,c,d,at,par){return E('line',Object.assign({x1:X(a),y1:Y(b),x2:X(c),y2:Y(d)},at),par||plot);},
+    vline(x,at){return E('line',Object.assign({x1:X(x),x2:X(x),y1:m.t,y2:m.t+ih},at),plot);},
+    hline(y,at){return E('line',Object.assign({x1:m.l,x2:m.l+iw,y1:Y(y),y2:Y(y)},at),plot);},
+    rect(xa,ya,xb,yb,at,par){const xx=Math.min(X(xa),X(xb)),yy=Math.min(Y(ya),Y(yb));return E('rect',Object.assign({x:xx,y:yy,width:Math.abs(X(xb)-X(xa)),height:Math.abs(Y(yb)-Y(ya))},at),par||plot);},
+    text(x,y,s,at){const t=E('text',Object.assign({x:X(x),y:Y(y)},at),top);t.textContent=s;return t;},
+    dot(x,y,r,at){return E('circle',Object.assign({cx:X(x),cy:Y(y),r},at),top);}
+  };
+  if(o.hover){
+    const hl=E('line',{class:'ch-hover-line',y1:m.t,y2:m.t+ih,visibility:'hidden'},top);
+    const hd=E('circle',{r:5,fill:'var(--danger)',stroke:'var(--surface)','stroke-width':2,visibility:'hidden'},top);
+    const tip=E('g',{class:'ch-tip',visibility:'hidden'},top),tr=E('rect',{rx:6,height:26},tip),tt=E('text',{y:17},tip);
+    const ov=E('rect',{x:m.l,y:m.t,width:iw,height:ih,fill:'transparent',style:'cursor:crosshair'},svg);
+    const move=ev=>{const pt=svg.createSVGPoint();const src=ev.touches?ev.touches[0]:ev;pt.x=src.clientX;pt.y=src.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+      const xv=Xi(Math.max(m.l,Math.min(m.l+iw,p.x)));const r=o.hover(xv);if(!r)return;
+      const px=X(r.x),py=Y(r.y);hl.setAttribute('x1',px);hl.setAttribute('x2',px);hd.setAttribute('cx',px);hd.setAttribute('cy',py);
+      tt.textContent=r.label;tt.setAttribute('x',10);const w=r.label.length*7.1+20;tr.setAttribute('width',w);
+      let tx=px+12;if(tx+w>m.l+iw)tx=px-w-12;let ty=Math.max(m.t,py-36);tip.setAttribute('transform',`translate(${tx},${ty})`);
+      [hl,hd,tip].forEach(e=>e.setAttribute('visibility','visible'));};
+    ov.addEventListener('mousemove',move);ov.addEventListener('touchmove',e=>{move(e);},{passive:true});
+    ov.addEventListener('mouseleave',()=>[hl,hd,tip].forEach(e=>e.setAttribute('visibility','hidden')));
+  }
+  return api;
+}
+function niceTicks(a,b,count=5){const span=b-a;const step0=span/count;const mag=Math.pow(10,Math.floor(Math.log10(step0)));const r=step0/mag;const step=(r<1.5?1:r<3?2:r<7?5:10)*mag;const t=[];for(let v=Math.ceil(a/step-1e-9)*step;v<=b+1e-9;v+=step)t.push(+v.toFixed(10));return t;}
+function decFor(step){return Math.max(0,-Math.floor(Math.log10(step)+1e-9));}
+
+/* ============ CHARTS ============ */
+function drawVar(){
+  const c=chart(document.getElementById('chVar'),{h:250,x:[0,1],y:[0,0.28],xTicks:[0,.25,.5,.75,1],yTicks:[0,.05,.1,.15,.2,.25],xFmt:v=>nf(v,2),yFmt:v=>nf(v,2),xLabel:'p',yLabel:'p(1 − p)',m:{l:56,b:46},
+    hover:x=>({x,y:x*(1-x),label:`p = ${nf(x,2)} → p(1−p) = ${nf(x*(1-x),3)}`})});
+  const pts=[];for(let i=0;i<=200;i++){const p=i/200;pts.push([p,p*(1-p)]);}
+  c.area(pts,{fill:'var(--a-soft)'});c.path(pts,{stroke:'var(--a)','stroke-width':2.5});
+  c.line(.5,0,.5,.25,{stroke:'var(--muted)','stroke-dasharray':'4 4'});c.dot(.5,.25,5,{fill:'var(--danger)'});
+  c.text(.5,.262,'máximo 0,25',{class:'ch-val','text-anchor':'middle'});
+  if(okProp()){c.dot(R.ph,R.s2,5,{fill:colL(),stroke:'var(--surface)','stroke-width':2});
+    c.text(R.ph,R.s2-0.022,`p̂ = ${nf(R.ph,2)}`,{class:'ch-tick','text-anchor':'middle'});}
+}
+function drawNormal(){
+  const z=R.z, lim=Math.max(4,Math.ceil(z+0.8));
+  const c=chart(document.getElementById('chNormal'),{h:330,x:[-lim,lim],y:[0,0.42],xTicks:niceTicks(-lim,lim,8).filter(v=>Number.isInteger(v)),yTicks:[0,.1,.2,.3,.4],xFmt:v=>nf(v),yFmt:v=>nf(v,1),xLabel:'z',m:{l:50},
+    hover:x=>({x,y:dnorm(x),label:`z = ${nf(x,2)}  ·  densidade ${nf(dnorm(x),3)}`})});
+  const seg=(a,b)=>{const p=[];for(let i=0;i<=160;i++){const x=a+(b-a)*i/160;p.push([x,dnorm(x)]);}return p;};
+  c.area(seg(-z,z),{fill:'var(--conf)',opacity:.85});
+  c.area(seg(-lim,-z),{fill:'var(--danger)',opacity:.55});c.area(seg(z,lim),{fill:'var(--danger)',opacity:.55});
+  c.path(seg(-lim,lim),{stroke:'var(--ink)','stroke-width':2.2});
+  [-z,z].forEach(v=>c.vline(v,{stroke:'var(--muted)','stroke-dasharray':'5 4','stroke-width':1.4}));
+  c.text(-z,0.385,sgn(-z,3),{class:'ch-val','text-anchor':'middle'});c.text(z,0.385,sgn(z,3),{class:'ch-val','text-anchor':'middle'});
+  c.text(0,0.17,pct(R.conf,R.conf*100%1?1:0),{class:'ch-val','text-anchor':'middle',style:'font-size:20px'});
+  c.text(-(z+lim)/2,0.05,pct(R.alpha/2,2),{class:'ch-val','text-anchor':'middle',style:'fill:var(--danger)'});
+  c.text((z+lim)/2,0.05,pct(R.alpha/2,2),{class:'ch-val','text-anchor':'middle',style:'fill:var(--danger)'});
+}
+function marginRows(){return [...new Set([10,100,500,700,1000,R.n].concat(R.n<5000?[5000]:[]))].sort((a,b)=>a-b);}
+function drawMargin(){
+  const z=R.z, xmax=Math.max(1e4,Math.pow(10,Math.ceil(Math.log10(R.n*3)))), ymax=Math.ceil(z*Math.sqrt(.25/10)*100/5)*5/100;
+  const xt=[];for(let v=10;v<=xmax;v*=10)xt.push(v);
+  const f=x=>z*Math.sqrt(.25/x);
+  const c=chart(document.getElementById('chMargin'),{h:360,x:[8,xmax],xlog:true,y:[0,ymax],xTicks:xt,yTicks:niceTicks(0,ymax,6),
+    xFmt:v=>v>=1e3?nf(v/1e3)+' mil':nf(v),yFmt:v=>nf(v*100)+' p.p.',xLabel:'Tamanho da amostra (escala log)',m:{l:66},
+    hover:x=>{const n=Math.round(x);return{x:n,y:f(n),label:`n = ${nf(n)}  →  ±${nf(f(n)*100,2)} p.p.`};}});
+  const pts=[];for(let i=0;i<=200;i++){const x=8*Math.pow(xmax/8,i/200);pts.push([x,f(x)]);}
+  c.area(pts,{fill:'var(--a-soft)'});c.path(pts,{stroke:'var(--a)','stroke-width':2.6});
+  c.hline(R.e,{stroke:'var(--muted)','stroke-dasharray':'6 5'});
+  c.text(11,R.e+ymax*0.025,`ε = ±${nf(R.ev,1)} p.p.`,{class:'ch-tick'});
+  [10,100,500,700,1000].forEach(v=>c.dot(v,f(v),4,{fill:'var(--a)'}));
+  c.dot(R.n,f(R.n),7,{fill:'var(--danger)',stroke:'var(--surface)','stroke-width':2});
+  const lx=R.n*2.2<xmax?R.n*1.6:R.n/6;
+  c.text(lx,f(R.n)+ymax*0.18,`n = ${nf(R.n)}`,{class:'ch-val',style:'fill:var(--danger)'});
+  c.text(lx,f(R.n)+ymax*0.11,`±${nf(f(R.n)*100,2)} p.p.`,{class:'ch-tick',style:'fill:var(--danger)'});
+  const tb=document.getElementById('tbMargin');
+  tb.innerHTML=marginRows().map(v=>`<tr class="${v===R.n?'hl':''}"><td class="num">${nf(v)}${v===R.n?' ← atual':''}</td><td class="num">±${nf(f(v)*100,1)} p.p.</td></tr>`).join('');
+}
+function hatch(c,color,idx){const pid=c.id+'h'+idx;const p=E('pattern',{id:pid,width:7,height:7,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},c.defs);E('line',{x1:0,y1:0,x2:0,y2:7,stroke:color,'stroke-width':1.3},p);return`url(#${pid})`;}
+function drawResult(){
+  const pa=R.pA,pb=R.pB,m=R.moe, top=Math.min(1,Math.ceil((Math.max(pa,pb)+m+0.06)*10)/10);
+  const c=chart(document.getElementById('chResult'),{h:360,x:[0,2],y:[0,top],yTicks:niceTicks(0,top,5),yFmt:v=>nf(v*100)+'%',m:{l:56,b:40},yAxis:false});
+  const bars=[[0.5,pa,'var(--a)',S.nameA],[1.5,pb,'var(--b)',S.nameB]];
+  bars.forEach(([x,v,col,name],i)=>{
+    c.rect(x-.3,0,x+.3,v,{fill:col,rx:5});
+    c.rect(x-.34,Math.max(0,v-m),x+.34,Math.min(1,v+m),{fill:hatch(c,'var(--ink)',i),stroke:'var(--ink)','stroke-width':1.3,rx:3,opacity:.85});
+    c.text(x,Math.min(top,v+m)+top*0.035,`${nf(v*100,1)}% ± ${nf(m*100,1)}`,{class:'ch-val','text-anchor':'middle'});
+    E('text',{x:c.X(x),y:c.Y(0)+22,class:'ch-lab','text-anchor':'middle'},c.top).textContent=(i?'⛰️ ':'🏖️ ')+name;
+    E('text',{x:c.X(x),y:c.Y(v/2)+14,'text-anchor':'middle',style:'font-size:40px'},c.top).textContent=i?'⛰️':'🏖️';
+  });
+  c.hline(.5,{stroke:'var(--ink)','stroke-dasharray':'6 5','stroke-width':1.4});
+  c.text(1.98,.5+top*0.03,'50%',{class:'ch-tick','text-anchor':'end'});
+}
+function drawBern(id,h){
+  const c=chart(document.getElementById(id),{h:h||260,x:[0,2],y:[0,1.1],m:{l:16,r:16,b:40,t:16},yAxis:false});
+  [[0.5,R.qa,colO(),`X = 0 · ${nameO()}`],[1.5,R.ph,colL(),`X = 1 · ${nameL()}`]].forEach(([x,v,col,lab])=>{
+    c.rect(x-.32,0,x+.32,v,{fill:col,rx:5});c.text(x,v+0.05,nf(v,2),{class:'ch-val','text-anchor':'middle'});
+    E('text',{x:c.X(x),y:c.Y(0)+22,class:'ch-tick','text-anchor':'middle'},c.top).textContent=lab;});
+}
+function binomData(n,p){const mu=n*p,sd=Math.sqrt(n*p*(1-p));let a=Math.max(0,Math.floor(mu-4.2*sd)),b=Math.min(n,Math.ceil(mu+4.2*sd));
+  if(b-a<10){a=Math.max(0,a-5);b=Math.min(n,b+5);}const pts=[];for(let k=a;k<=b;k++)pts.push([k,Math.exp(logBinom(n,k,p))]);return{a,b,mu,sd,pts};}
+function drawBinom(){
+  const {a,b,mu,sd,pts}=binomData(R.n,R.ph);const n=R.n;
+  const half=n/2, lo=Math.min(a,Math.floor(half)-2), hi=Math.max(b,Math.ceil(half)+2);
+  const showHalf=half>=lo&&half<=hi&&(Math.abs(half-mu)<6*sd);
+  const xa=showHalf?Math.min(a,half-sd):a, xb=showHalf?Math.max(b,half+sd):b;
+  const ymax=Math.max(...pts.map(p=>p[1]))*1.15;
+  const c=chart(document.getElementById('chBinom'),{h:320,x:[xa-0.5,xb+0.5],y:[0,ymax],xTicks:niceTicks(xa,xb,7).filter(v=>Number.isInteger(v)),yTicks:niceTicks(0,ymax,4),xFmt:v=>nf(v),yFmt:v=>nf(v,decFor(ymax/4)+1),xLabel:`k = votos em ${nameL()}`,m:{l:62},
+    hover:x=>{const k=Math.round(x);if(k<0||k>n)return null;const pr=Math.exp(logBinom(n,k,R.ph));return{x:k,y:pr,label:`P(K = ${nf(k)}) = ${nf(pr*100,3)}%`};}});
+  const w=Math.max(0.15,Math.min(0.8,(c.iw/(xb-xa+1))*0.7/(c.iw/(xb-xa+1))));
+  const barW=Math.min(0.42,0.35);
+  pts.forEach(([k,v])=>c.rect(k-barW,0,k+barW,v,{fill:colL(),opacity:k===R.kB?1:.62}));
+  const np=[];for(let i=0;i<=200;i++){const x=xa+(xb-xa)*i/200;np.push([x,dnorm((x-mu)/sd)/sd]);}
+  c.path(np,{stroke:'var(--ink)','stroke-width':2});
+  if(showHalf){c.vline(half,{stroke:'var(--a)','stroke-dasharray':'6 4','stroke-width':1.8});c.text(half,ymax*0.95,`empate: ${nf(half,half%1?1:0)}`,{class:'ch-val','text-anchor':'middle',style:'fill:var(--a)'});}
+  c.text(R.kB,Math.exp(logBinom(n,R.kB,R.ph))+ymax*0.05,`k = ${nf(R.kB)}`,{class:'ch-val','text-anchor':'middle',style:'fill:'+colL()});
+}
+function drawProb(){
+  const {a,b,mu,sd,pts}=binomData(R.n,R.ph);const ymax=Math.max(...pts.map(p=>p[1]))*1.12;
+  const c=chart(document.getElementById('chProb'),{h:250,x:[a-0.5,b+0.5],y:[0,ymax],xTicks:niceTicks(a,b,5).filter(Number.isInteger),xFmt:v=>nf(v),m:{l:20,r:20,b:44},xLabel:'k (contagem)'});
+  const step=Math.max(1,Math.round((b-a)/60));
+  pts.forEach(([k,v])=>{if((k-a)%step===0)c.rect(k-step*0.32,0,k+step*0.32,v,{fill:'var(--a)'});});
+}
+function likRange(n,ph,mult){const ep=Math.sqrt(Math.max(ph*(1-ph),1e-6)/n);let lo=Math.max(0.0005,ph-mult*ep),hi=Math.min(0.9995,ph+mult*ep);return[lo,hi];}
+function drawLik0(){
+  const [lo,hi]=likRange(R.n,R.ph,4.5);
+  const c=chart(document.getElementById('chLik0'),{h:250,x:[lo,hi],y:[0,1.12],xTicks:niceTicks(lo,hi,5),xFmt:v=>nf(v,decFor((hi-lo)/5)),m:{l:20,r:20,b:44},xLabel:'p (candidato)'});
+  const pts=[];for(let i=0;i<=200;i++){const p=lo+(hi-lo)*i/200;pts.push([p,relLik(p,R.n,R.kL)]);}
+  c.path(pts,{stroke:'var(--ink)','stroke-width':2.4});c.dot(R.ph,1,6,{fill:colL()});
+  c.text(R.ph,0.5,`p̂ = ${nf(R.ph,3)}`,{class:'ch-val','text-anchor':'middle'});
+}
+function drawLikRel(){
+  const [lo,hi]=likRange(R.n,R.ph,5);
+  const c=chart(document.getElementById('chLikRel'),{h:320,x:[lo,hi],y:[0,1.08],xTicks:niceTicks(lo,hi,6),yTicks:[0,.2,.4,.6,.8,1],xFmt:v=>nf(v,decFor((hi-lo)/6)),yFmt:v=>nf(v,1),xLabel:'p',yLabel:'L(p)/L(p̂)',m:{l:56},
+    hover:p=>({x:p,y:relLik(p,R.n,R.kL),label:`p = ${nf(p*100,2)}%  →  ${nf(relLik(p,R.n,R.kL),3)}`})});
+  const pts=[];for(let i=0;i<=240;i++){const p=lo+(hi-lo)*i/240;pts.push([p,relLik(p,R.n,R.kL)]);}
+  c.area(pts,{fill:'var(--a-soft)'});c.path(pts,{stroke:'var(--a)','stroke-width':2.5});
+  c.hline(R.cut,{stroke:'var(--ok)','stroke-dasharray':'6 4','stroke-width':1.6});
+  c.text(hi,R.cut+0.035,`corte ${nf(R.cut,3)} (IC ~${pct(R.conf,R.conf*100%1?1:0)})`,{class:'ch-tick','text-anchor':'end',style:'fill:var(--ok)'});
+  c.vline(R.ph,{stroke:'var(--danger)','stroke-width':2});
+  if(.5>lo&&.5<hi){c.vline(.5,{stroke:'var(--muted)','stroke-dasharray':'3 4','stroke-width':1.6});const v=relLik(.5,R.n,R.kL);c.dot(.5,v,5,{fill:'var(--muted)'});c.text(.5,Math.min(1.02,v+0.07),`50%: ${nf(v,2)}`,{class:'ch-val','text-anchor':R.ph>.5?'end':'start',dx:R.ph>.5?-6:6});}
+}
+function drawLogLik(){
+  const [lo,hi]=likRange(R.n,R.ph,5);const ymin=-14;
+  const c=chart(document.getElementById('chLogLik'),{h:320,x:[lo,hi],y:[ymin,1],xTicks:niceTicks(lo,hi,6),yTicks:[-12,-10,-8,-6,-4,-2,0],xFmt:v=>nf(v,decFor((hi-lo)/6)),yFmt:v=>nf(v),xLabel:'p',yLabel:'ℓ(p) − ℓ(p̂)',m:{l:56},
+    hover:p=>{const v=Math.log(relLik(p,R.n,R.kL));return{x:p,y:Math.max(ymin,v),label:`p = ${nf(p*100,2)}%  →  ${nf(v,2)}`};}});
+  const pts=[];for(let i=0;i<=240;i++){const p=lo+(hi-lo)*i/240;pts.push([p,Math.max(ymin-1,Math.log(relLik(p,R.n,R.kL)))]);}
+  c.path(pts,{stroke:'var(--a)','stroke-width':2.5});
+  c.hline(-R.z*R.z/2,{stroke:'var(--ok)','stroke-dasharray':'6 4','stroke-width':1.4});
+  c.vline(R.ph,{stroke:'var(--danger)','stroke-width':2});
+  if(.5>lo&&.5<hi)c.vline(.5,{stroke:'var(--muted)','stroke-dasharray':'3 4','stroke-width':1.6});
+}
+function curvNs(){let base=[Math.round(R.n/10),Math.round(R.n/4),R.n,R.n*4,R.n*16].filter(v=>v>=10);return[...new Set(base)];}
+const CURV_COL=['#7b5ea7','#4f6fb8','var(--danger)','#2a9d8f','#9fbf3b'];
+function drawCurv(){
+  const ns=curvNs(), ph=R.ph;const [lo,hi]=likRange(ns[0],ph,3.4);
+  const c=chart(document.getElementById('chCurv'),{h:330,x:[lo,hi],y:[0,1.08],xTicks:niceTicks(lo,hi,6),yTicks:[0,.2,.4,.6,.8,1],xFmt:v=>nf(v,decFor((hi-lo)/6)),yFmt:v=>nf(v,1),xLabel:'p',yLabel:'L(p)/L(p̂)',m:{l:56}});
+  ns.forEach((n,i)=>{const pts=[];for(let j=0;j<=260;j++){const p=lo+(hi-lo)*j/260;let v=0;v+=n*ph*Math.log(p/ph)+n*(1-ph)*Math.log((1-p)/(1-ph));pts.push([p,Math.exp(v)]);}
+    c.path(pts,{stroke:CURV_COL[i%5],'stroke-width':n===R.n?3.2:2});});
+  c.vline(ph,{stroke:'var(--danger)','stroke-width':1.2,opacity:.6});
+  if(.5>lo&&.5<hi)c.vline(.5,{stroke:'var(--muted)','stroke-dasharray':'3 4','stroke-width':1.6});
+  document.getElementById('lgCurv').innerHTML=ns.map((n,i)=>`<span><i class="ln" style="background:${CURV_COL[i%5]}"></i>n = ${nf(n)}${n===R.n?' (atual)':''}</span>`).join('')+'<span><i class="dash" style="border-color:var(--muted)"></i>empate</span>';
+  document.getElementById('tbCurv').innerHTML=ns.map(n=>{const I=n/R.s2;return`<tr class="${n===R.n?'hl':''}"><td class="num">${nf(n)}</td><td class="num">${nf(I)}</td><td class="num">${nf(100/Math.sqrt(I),2)} p.p.</td></tr>`;}).join('');
+}
+function drawIC(){
+  const m=R.moe, planned=R.e;
+  const lo=Math.max(0,Math.floor((R.qa-Math.max(m,planned)-0.02)*50)/50), hi=Math.min(1,Math.ceil((R.ph+Math.max(m,planned)+0.02)*50)/50);
+  const x0=Math.min(lo,.48),x1=Math.max(hi,.52);
+  const c=chart(document.getElementById('chIC'),{h:270,x:[x0,x1],y:[0,3],xTicks:niceTicks(x0,x1,6),xFmt:v=>nf(v*100,decFor((x1-x0)*100/6))+'%',m:{l:110,r:24,b:40,t:14},yAxis:false});
+  if(R.tie)c.rect(R.ph-m,0.2,R.qa+m,2.8,{fill:'var(--danger-soft)'});
+  [[2.1,R.ph,colL(),nameL()],[0.9,R.qa,colO(),nameO()]].forEach(([y,v,col,name])=>{
+    c.rect(v-planned,y-.36,v+planned,y+.36,{fill:'var(--a-soft)',stroke:'var(--a)','stroke-width':.8,rx:6});
+    c.line(v-m,y,v+m,y,{stroke:'var(--accent)','stroke-width':7,'stroke-linecap':'round'});
+    c.dot(v,y,9,{fill:col,stroke:'var(--surface)','stroke-width':3});
+    c.text(v-m,y+.55,nf((v-m)*100,1)+'%',{class:'ch-tick','text-anchor':'middle'});
+    c.text(v+m,y+.55,nf((v+m)*100,1)+'%',{class:'ch-tick','text-anchor':'middle'});
+    E('text',{x:c.m.l-12,y:c.Y(y)+5,class:'ch-lab','text-anchor':'end'},c.top).textContent=name;
+  });
+  c.vline(.5,{stroke:'var(--ink)','stroke-dasharray':'6 4','stroke-width':1.6});
+}
+/* ---------- Population grid ---------- */
+let popArr=[],popHist=[];
+function buildPop(){const nB=Math.round(400*R.ph);popArr=Array.from({length:400},(_,i)=>i<nB?1:0);
+  for(let i=399;i>0;i--){const j=Math.floor(Math.random()*(i+1));[popArr[i],popArr[j]]=[popArr[j],popArr[i]];}popHist=[];drawPop(null);}
+function drawPop(sample){
+  const host=document.getElementById('popGrid');host.innerHTML='';
+  const svg=E('svg',{viewBox:'0 0 400 400',class:'popgrid',role:'img','aria-label':'grade de 400 pessoas'},host);
+  const set=sample?new Set(sample):null;
+  popArr.forEach((v,i)=>{const x=(i%20)*20+10,y=Math.floor(i/20)*20+10;const sel=set&&set.has(i);
+    E('circle',{cx:x,cy:y,r:sel?8:6.5,fill:v?colL():colO(),opacity:set&&!sel?.28:1,stroke:sel?'var(--ink)':'none','stroke-width':sel?2.5:0},svg);});
+  const ph=document.getElementById('popPhat'),hh=document.getElementById('popHist');
+  if(sample){const k=sample.reduce((s,i)=>s+popArr[i],0);const p=k/sample.length;popHist.push(p);if(popHist.length>8)popHist.shift();
+    ph.innerHTML=`p̂ = ${k}/40 = <span style="color:${colL()}">${pct(p,1)}</span> <span style="font-size:15px" class="muted">(${nameL()})</span>`;hh.textContent='Últimas: '+popHist.map(v=>pct(v,0)).join(' · ')+`  (p real = ${pct(popArr.reduce((a,b)=>a+b,0)/400,1)})`;}
+  else{ph.textContent='—';hh.textContent=`p real nesta grade = ${pct(popArr.reduce((a,b)=>a+b,0)/400,1)}`;}
+}
+document.getElementById('btnSample').onclick=()=>{const idx=[...Array(400).keys()];for(let i=0;i<40;i++){const j=i+Math.floor(Math.random()*(400-i));[idx[i],idx[j]]=[idx[j],idx[i]];}drawPop(idx.slice(0,40));};
+
+/* ---------- Simulation ---------- */
+const M=10000;
+function runSim(){
+  const n=R.n,p=R.ph,exact=n*M<=2.5e7,sd=Math.sqrt(n*p*(1-p));const ph=new Float64Array(M);
+  for(let j=0;j<M;j++){let k;if(exact){k=0;for(let i=0;i<n;i++)if(Math.random()<p)k++;}else{k=Math.round(n*p+sd*gauss());k=Math.max(0,Math.min(n,k));}ph[j]=k/n;}
+  document.getElementById('simInfo').textContent=exact?`Sorteio exato de ${nf(n*M)} respostas individuais.`:`n grande: cada contagem sorteada pela aproximação Normal da Binomial.`;
+  // histogram
+  const ep=R.ep, lo=p-4.5*ep, hi=p+4.5*ep, bins=40, bw=(hi-lo)/bins, cnt=new Array(bins).fill(0);let inside=0;
+  ph.forEach(v=>{const b=Math.floor((v-lo)/bw);if(b>=0&&b<bins)cnt[b]++;if(Math.abs(v-p)<=R.z*ep+1e-12)inside++;});
+  const dens=cnt.map(c=>c/(M*bw)), dmax=Math.max(Math.max(...dens),1/(ep*Math.sqrt(2*Math.PI)))*1.12;
+  const c=chart(document.getElementById('chSimHist'),{h:320,x:[lo,hi],y:[0,dmax],xTicks:niceTicks(lo,hi,5),yTicks:niceTicks(0,dmax,5),xFmt:v=>nf(v,decFor((hi-lo)/5)),yFmt:v=>nf(v),xLabel:`p̂ (${nameL()})`,yLabel:'Densidade',m:{l:56}});
+  dens.forEach((d,i)=>c.rect(lo+i*bw+bw*0.06,0,lo+(i+1)*bw-bw*0.06,d,{fill:'var(--conf)'}));
+  const np=[];for(let i=0;i<=200;i++){const x=lo+(hi-lo)*i/200;np.push([x,dnorm((x-p)/ep)/ep]);}
+  c.path(np,{stroke:'var(--ink)','stroke-width':2});c.vline(p,{stroke:'var(--danger)','stroke-width':2});
+  [p-R.z*ep,p+R.z*ep].forEach(v=>c.vline(v,{stroke:'var(--muted)','stroke-dasharray':'5 4'}));
+  document.getElementById('simCover').innerHTML=`Das ${nf(M)} pesquisas, <b>${pct(inside/M,1)}</b> caíram a até ±z·EP da proporção real (esperado: ${pct(R.conf,1)}).`;
+  // convergence
+  const pts=[];let s=0,s2=0,next=10;const mult=Math.pow(M/10,1/90);
+  for(let j=0;j<M;j++){s+=ph[j];s2+=ph[j]*ph[j];const m=j+1;if(m>=next||m===M){const mean=s/m;pts.push([m,Math.sqrt(Math.max(0,(s2-m*mean*mean)/(m-1)))]);next=Math.ceil(next*mult);}}
+  const ys=pts.map(q=>q[1]).concat([ep]);let y0=Math.min(...ys),y1=Math.max(...ys);const pad=(y1-y0)*0.15||ep*0.1;y0-=pad;y1+=pad;
+  const c2=chart(document.getElementById('chSimConv'),{h:320,x:[10,M],xlog:true,y:[y0,y1],xTicks:[10,100,1000,10000],yTicks:niceTicks(y0,y1,5),xFmt:v=>nf(v),yFmt:v=>nf(v,decFor((y1-y0)/5)+1),xLabel:'Número de repetições da pesquisa',yLabel:'DP(p̂)',m:{l:70},
+    hover:x=>{let best=pts[0];pts.forEach(q=>{if(Math.abs(Math.log(q[0]/x))<Math.abs(Math.log(best[0]/x)))best=q;});return{x:best[0],y:best[1],label:`${nf(best[0])} repetições → ${nf(best[1],5)}`};}});
+  c2.hline(ep,{stroke:'var(--danger)','stroke-dasharray':'6 4','stroke-width':1.6});
+  c2.path(pts,{stroke:'var(--a)','stroke-width':2});
+}
+document.getElementById('btnSim').onclick=runSim;
+
+/* ============ TEX ============ */
+const TEX={
+  alpha:()=>`\\text{conf}=${tn(R.cv,R.cv%1?1:0)}\\%\\\\[2pt]\\alpha=1-${tn(R.conf,4).replace(/0+$/,'').replace(/\{,\}$/,'')}=${tn(R.alpha,4).replace(/0+$/,'')}`,
+  eps:()=>`\\varepsilon=${tn(R.e,4).replace(/0+$/,'').replace(/\{,\}$/,'')}\\;(\\pm${tn(R.ev,R.ev%1?1:0)}\\text{ p.p.})`,
+  z:()=>`z\\sim\\mathcal N(0,1)\\;\\Rightarrow\\;z_{${tn(R.alpha,4).replace(/0+$/,'')}/2}\\approx\\mathbf{${tn(R.z,3)}}`,
+  subst:()=>`n_0=\\frac{0{,}5\\,(1-0{,}5)}{(${tn(R.e,4).replace(/0+$/,'')})^{2}}\\,(${tn(R.z,3)})^{2}\\approx ${tn(R.n0,2)}`,
+  ceil0:()=>`\\lceil n_0\\rceil=\\mathbf{${tn(Math.ceil(R.n0-1e-9))}}\\text{ pessoas}`,
+  finite:()=>`n=\\frac{n_0}{1+\\frac{n_0-1}{N}}=\\frac{${tn(R.n0,2)}}{1+\\frac{${tn(R.n0-1,2)}}{${tn(R.N)}}}\\approx ${tn(R.nFin,2)}\\;\\Rightarrow\\;\\lceil n\\rceil=\\mathbf{${tn(R.nReq)}}`,
+  frac:()=>`\\text{Fração amostral: }\\frac{n}{N}=\\frac{${tn(R.n)}}{${tn(R.N)}}\\approx ${sci(R.frac)}${R.frac<1e-2?`\\sim\\mathcal O(10^{${Math.floor(Math.log10(R.frac))}})`:''}`,
+  moeReal:()=>`${tn(R.z,2)}\\times\\sqrt{0{,}25/${tn(R.n)}}\\approx\\pm${tn(R.moeC*100,2)}\\text{ p.p.}`,
+  mean:()=>`\\bar x=\\frac{(${tn(R.kB)}\\times 1)+(${tn(R.kA)}\\times 0)}{${tn(R.n)}}\\approx\\mathbf{${tn(R.ph,3)}}`,
+  s2:()=>`s^2=\\hat p(1-\\hat p)\\approx ${tn(R.s2,4)}`,
+  ep:()=>`EP=\\sqrt{\\frac{${tn(R.s2,4)}}{${tn(R.n)}}}\\approx ${tn(R.ep*100,2)}\\text{ p.p.}\\;\\Rightarrow\\;\\text{margem}=${tn(R.z,2)}\\times EP\\approx\\pm${tn(R.moe*100,2)}\\text{ p.p.}`,
+  bernP:()=>`X_i\\sim\\operatorname{Bernoulli}(${tn(R.ph,3)}):\\quad P(X=1)=P(\\text{${texEsc(nameL())}})\\approx ${tn(R.ph,3)},\\quad P(X=0)=P(\\text{${texEsc(nameO())}})\\approx ${tn(R.qa,3)}`,
+  binomNum:()=>`K\\sim\\operatorname{Binomial}(${tn(R.n)},\\,${tn(R.ph,3)}):\\quad P(K=${tn(R.kB)})=\\binom{${tn(R.n)}}{${tn(R.kB)}}(${tn(R.ph,3)})^{${tn(R.kB)}}(${tn(R.qa,3)})^{${tn(R.kA)}}\\approx ${sci(Math.exp(logBinom(R.n,R.kB,R.ph)))}`,
+  relNum:()=>`R(0{,}5)=\\Big(\\frac{0{,}5}{${tn(R.ph,3)}}\\Big)^{${tn(R.kB)}}\\Big(\\frac{0{,}5}{${tn(R.qa,3)}}\\Big)^{${tn(R.kA)}}\\approx ${sci(relLik(.5,R.n,R.kL))}`,
+  icNum:()=>`\\begin{aligned}\\text{${texEsc(nameL())}}&:\\;${tn(R.ph*100,1)}\\%\\pm${tn(R.moe*100,1)}\\Rightarrow[${tn((R.ph-R.moe)*100,1)}\\%;\\;${tn((R.ph+R.moe)*100,1)}\\%]\\\\\\text{${texEsc(nameO())}}&:\\;${tn(R.qa*100,1)}\\%\\pm${tn(R.moe*100,1)}\\Rightarrow[${tn((R.qa-R.moe)*100,1)}\\%;\\;${tn((R.qa+R.moe)*100,1)}\\%]\\end{aligned}`,
+  bernNum:()=>`\\hat p=${tn(R.ph,3)}:\\;\\operatorname{Var}\\approx ${tn(R.ph,3)}\\times${tn(R.qa,3)}\\approx ${tn(R.s2,4)}\\;\\Rightarrow\\;\\mathbf{DP\\approx ${tn(R.s,2)}}\\text{ por pessoa}`,
+  EK:()=>`\\text{Com }\\hat p=${tn(R.ph,3)}:\\;${tn(R.n)}\\times${tn(R.ph,3)}\\approx\\mathbf{${tn(R.n*R.ph,0)}}\\text{ votos}`,
+  EK50:()=>`\\text{Com empate: }${tn(R.n)}\\times0{,}5=\\mathbf{${tn(R.n/2,R.n%2?1:0)}}\\text{ votos}`,
+  VK:()=>`${tn(R.n)}\\times${tn(R.s2,4)}\\approx ${tn(R.varK,1)}\\;\\Rightarrow\\;\\mathbf{DP\\approx ${tn(R.sdK,1)}}\\text{ votos}`,
+  phatNum:()=>`\\hat p=\\frac{${tn(R.kB)}}{${tn(R.n)}}=${tn(R.ph,5)}`,
+  ellNum:()=>`\\text{Nos dados: }\\ell(p)=${tn(R.kB)}\\ln p+${tn(R.kA)}\\ln(1-p)\\;\\Rightarrow\\;\\hat p=\\frac{${tn(R.kB)}}{${tn(R.n)}}\\approx ${tn(R.ph,3)}`,
+  ellMax:()=>`\\ell(p)=${tn(R.kB)}\\cdot\\ln p+${tn(R.kA)}\\cdot\\ln(1-p)\\;\\longrightarrow\\;\\text{máximo em }\\hat p=\\frac{${tn(R.kB)}}{${tn(R.n)}}\\approx ${tn(R.ph,3)}`,
+  cut:()=>`e^{-z^2/2}=e^{-${tn(R.z,2)}^2/2}\\approx ${tn(R.cut,3)}`,
+  fisher:()=>`I(\\hat p)=\\frac{${tn(R.n)}}{${tn(R.s2,4)}}\\approx ${tn(R.fisher)}\\;\\Rightarrow\\;EP=\\frac{1}{\\sqrt{${tn(R.fisher)}}}\\approx ${tn(R.ep*100,2)}\\text{ p.p.}`
+};
+// de quais parâmetros cada fórmula dinâmica depende (sem isso, mostra "a definir")
+const FN_DEP={alpha:okConf,eps:okEps,z:okConf,subst:okParams,ceil0:okParams,frac:okParams,moeReal:okParams};
+function renderTex(el,tex){
+  if(window.katex){try{katex.render(tex,el,{displayMode:el.classList.contains('d'),throwOnError:false,strict:false});return;}catch(e){}}
+  el.textContent=tex;
+}
+function renderStaticTex(){document.querySelectorAll('[data-tex]').forEach(el=>renderTex(el,el.dataset.tex));}
+function renderDynTex(){document.querySelectorAll('[data-fn]').forEach(el=>{const k=el.dataset.fn,f=TEX[k];if(!f)return;const ok=(FN_DEP[k]||okProp)();renderTex(el,ok?f():'\\text{a definir}');});}
+
+/* ============ TEXT VALUES ============ */
+function values(){
+  const r=R, ld=r.lead, L=nameL(), O=nameO();
+  const confTxt=pct(r.conf,r.cv%1?1:0);
+  const V={
+    nameA:S.nameA,nameB:S.nameB,nameL:L,nameO:O,N:nf(r.N),Nlong:nf(r.N),Nunit:' pessoas',Nhuman:human(r.N),n:nf(r.n),nReq:nf(r.nReq),n0ceil:nf(Math.ceil(r.n0-1e-9)),
+    z3:nf(r.z,3),zpos:'+'+nf(r.z,2),zneg:'−'+nf(r.z,2),confPct:confTxt,alpha:nf(r.alpha,3).replace(/0+$/,''),alphaPct:pct(r.alpha,r.alpha*100%1?1:0),alphaHalfPct:pct(r.alpha/2,2),
+    epsTxt:nf(r.ev,r.ev%1?1:0),epsDec:nf(r.e,4).replace(/0+$/,''),
+    moePP:'±'+nf(r.moe*100,1)+' p.p.',moeTxt:nf(r.moe*100,1),moeConsTxt:nf(r.moeC*100,1),
+    kA:nf(r.kA),kB:nf(r.kB),votesA:nf(r.votesA),votesB:nf(r.votesB),pctA:pct(r.pA,1),pctB:pct(r.pB,1),pBpct1:pct(r.ph,1),ph3:nf(r.ph,3),
+    sTxt:nf(r.s,2),epPP:nf(r.ep*100,2)+' p.p.',ep4:nf(r.ep,4),sdK1:nf(r.sdK,1),sdKr:nf(Math.round(r.sdK)),
+    simM:nf(M),fracPct:pct(r.frac,r.frac<1e-4?4:r.frac<1e-2?3:1),
+  };
+  V.popTxt=okProp()?`com <b style="color:${colL()}">${pct(r.ph,1)}</b> preferindo ${L}`:'divididas entre os dois destinos';
+  V.pillarTxt=`conf = ${confTxt} (z ≈ ${nf(r.z,3)}), ε = ±${V.epsTxt} p.p., p = 0,5 ⇒ n₀ ≈ ${nf(Math.ceil(r.n0-1e-9))} entrevistas.`;
+  V.fracTxt=r.frac<0.05?`A amostra representa apenas <b>${V.fracPct}</b> da população: uma parte muito pequena basta para falar sobre o todo.`
+    :`A amostra já é <b>${V.fracPct}</b> da população — uma fração relevante (acima de ~5%, uma correção para população finita reduziria um pouco o n necessário).`;
+  V.resultTxt=`Com ±${nf(r.moe*100,1)} p.p., <b>${S.nameA}</b> pode estar entre ${pct(r.pA-r.moe,1)} e ${pct(r.pA+r.moe,1)}, e <b>${S.nameB}</b> entre ${pct(r.pB-r.moe,1)} e ${pct(r.pB+r.moe,1)}.`;
+  if(!ld){V.guideQ=`${nf(r.n)} entrevistas e um empate exato: o que a Estatística pode afirmar?`;}
+  else if(r.tie){V.guideQ=`Por que ${nf(r.n)} entrevistas não bastaram para declarar ${L} vencedora?`;}
+  else{V.guideQ=`Com ${nf(r.n)} entrevistas já dá para declarar ${L} vencedora. Por quê?`;}
+  V.icTitle=`Margem real de ±${nf(r.moe*100,1)} p.p. — ${r.tie?'e ainda é empate':'e '+L+' lidera'}`;
+  V.icTxt=!ld?`As duas opções têm exatamente a mesma proporção: os intervalos coincidem — <b>empate</b>.`
+    :r.tie?`O intervalo de <b>${L}</b> começa em ${pct(r.ph-r.moe,1)} e o de <b>${O}</b> termina em ${pct(r.qa+r.moe,1)}: os intervalos <b>se sobrepõem</b> (o de ${L} alcança os 50%). Com ${confTxt} de confiança, os dados são compatíveis com as duas opções empatadas — <b>empate técnico</b>.`
+    :`O intervalo de <b>${L}</b> começa em ${pct(r.ph-r.moe,1)}, acima do fim do intervalo de <b>${O}</b> (${pct(r.qa+r.moe,1)}): os intervalos <b>não se sobrepõem</b> e o de ${L} fica todo acima de 50%. Com ${confTxt} de confiança, <b>${L} lidera</b>.`;
+  // candidates note
+  const r50=relLik(.5,r.n,r.kL);
+  V.candNote=r.tie?`Os dados quase não separam <b>${pct(r.ph,1)}</b> de <b>50%</b> (1,00 contra ${nf(r50,2)}): é o <b>empate técnico</b> visto pela verossimilhança.`
+    :`O empate (50%) tem verossimilhança relativa de apenas <b>${r50<0.001?'< 0,001':nf(r50,3)}</b>: os dados <b>descartam</b> o empate.`;
+  if(!ld)V.candNote=`p̂ = 50% exatamente: o próprio empate é o melhor palpite (razão 1,00).`;
+  // conclusão simples
+  V.finalHead=`${nf(r.n)} pessoas, escolhidas ao acaso, falam sobre ${human(r.N)} com margem de ±${nf(r.moe*100,1)} p.p.`;
+  V.finalTxt=!ld?`Na pesquisa, ${S.nameA} e ${S.nameB} ficaram exatamente empatados. Com ${confTxt} de confiança, não há preferência entre os dois destinos.`
+    :r.tie?`Na pesquisa, ${L} ficou com ${pct(r.ph,1)} e ${O} com ${pct(r.qa,1)}. Como a diferença é menor do que a margem de erro permite separar, concluímos com ${confTxt} de confiança que há um <b>empate técnico</b> entre os dois destinos.`
+    :`Na pesquisa, ${L} ficou com ${pct(r.ph,1)} e ${O} com ${pct(r.qa,1)}. A diferença supera a margem de erro, então concluímos com ${confTxt} de confiança que <b>${L} é o destino preferido</b> da população.`;
+  return V;
+}
+// de quais parâmetros cada valor depende; o padrão é precisar de tudo (inclusive a proporção)
+const V_DEP={nameA:null,nameB:null,nameL:null,nameO:null,popTxt:null,simM:null,
+  N:okN,Nlong:okN,Nunit:okN,Nhuman:okN,
+  confPct:okConf,alpha:okConf,alphaPct:okConf,alphaHalfPct:okConf,z3:okConf,zpos:okConf,zneg:okConf,
+  epsTxt:okEps,epsDec:okEps,
+  n:okParams,nReq:okParams,n0ceil:okParams,fracPct:okParams,fracTxt:okParams,pillarTxt:okParams,moeConsTxt:okParams};
+function applyValues(){
+  const V=values();
+  document.querySelectorAll('[data-v]').forEach(el=>{const k=el.dataset.v;if(V[k]==null)return;
+    const dep=k in V_DEP?V_DEP[k]:okProp;let v=V[k];
+    if(dep&&!dep())v=(k==='Nlong'||k==='pillarTxt'||k==='fracTxt')?'a definir':k==='Nunit'?'':'—';
+    if(/[<&]/.test(v))el.innerHTML=v;else el.textContent=v;});
+  ['pillVerdict','verdict1'].forEach(id=>{const el=document.getElementById(id);
+    if(!okProp()){el.className=id==='pillVerdict'?'pill':'verdict';el.textContent='aguardando pesquisa';return;}
+    el.className=(id==='pillVerdict'?'pill ':'verdict ')+(R.tie||!R.lead?'tie':'win');
+    el.textContent=!R.lead?'Empate exato':R.tie?'⚖ Empate técnico':`✓ ${nameOf(R.lead)} lidera`;});
+  const sa=$('splitA'),sb=$('splitB');
+  if(S.pB==null){sa.style.width=sb.style.width='50%';sa.textContent=sb.textContent='—';}
+  else{sa.style.width=(100-S.pB)+'%';sa.textContent=nf(100-S.pB,1)+'%';sb.style.width=S.pB+'%';sb.textContent=nf(S.pB,1)+'%';}
+  document.body.classList.toggle('need-params',!okParams());
+  document.body.classList.toggle('need-prop',!okProp());
+}
+function tables(){
+  // candidates
+  const step=Math.max(0.005,Math.round(R.ep*0.65*200)/200);
+  let cands=[];for(let j=-3;j<=3;j++)cands.push(R.ph+j*step);
+  if(!cands.some(c=>Math.abs(c-.5)<1e-9)&&Math.abs(.5-R.ph)<8*step)cands.push(.5);
+  cands=cands.filter(c=>c>0&&c<1).sort((a,b)=>a-b);
+  document.getElementById('tbCand').innerHTML=cands.map(p=>{const v=relLik(p,R.n,R.kL);const isMax=Math.abs(p-R.ph)<1e-9,isTie=Math.abs(p-.5)<1e-9;
+    const lab=isMax?'máximo: o melhor palpite':v>=0.5?'quase tão bom quanto o melhor':v>=R.cut?'possível (dentro do IC)':v>=0.01?'pouco plausível':'implausível';
+    return`<tr class="${isMax?'hl':isTie?'hl2':''}"><td class="num">${nf(p*100,1)}%${isMax?' = p̂':''}${isTie?' (empate)':''}</td><td class="num">${v<0.005?'≈ 0':nf(v,2)}</td><td>${lab}</td></tr>`;}).join('');
+  // z table
+  const zc=[80,85,90,95,98,99,99.5,99.9];
+  document.getElementById('zBody').innerHTML=zc.map(c=>`<tr class="click ${Math.abs(c-S.conf)<1e-9?'on':''}" data-c="${c}"><td>${nf(c,c%1?1:0)}%</td><td>${nf(1-c/100,3)}</td><td class="mono">${nf(invNorm(1-(1-c/100)/2),3)}</td></tr>`).join('');
+}
+function syncChips(){
+  document.querySelectorAll('.chips').forEach(g=>{const k=g.dataset.group;const cur=k==='N'?S.N:k==='conf'?S.conf:k==='eps'?S.eps:S.pB;
+    g.querySelectorAll('.chip').forEach(b=>b.classList.toggle('on',Math.abs(+b.dataset.val-cur)<1e-9));});
+}
+
+/* ============ UPDATE ============ */
+let simTimer=null;
+function update(opts={}){
+  compute();applyValues();tables();syncChips();renderDynTex();
+  drawVar();drawNormal();drawMargin();drawResult();drawBern('chBern1',240);drawBinom();drawProb();drawLik0();drawLikRel();drawLogLik();drawCurv();drawIC();
+  if(opts.pop||!popArr.length)buildPop();
+  clearTimeout(simTimer);simTimer=setTimeout(runSim,opts.now?0:300);
+  pyOnUpdate();
+}
+
+/* ============ INPUTS ============ */
+const $=id=>document.getElementById(id);
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+const r1=v=>Math.round(v*10)/10;
+function setPB(v){S.pB=v;$('rgP').value=v==null?50:v;$('inP').value=v==null?'':r1(v);$('inPA').value=v==null?'':r1(100-v);}
+function bindPair(rg,inp,key,min,max){
+  $(rg).addEventListener('input',e=>{S[key]=+e.target.value;$(inp).value=S[key];update();});
+  $(inp).addEventListener('change',e=>{let v=parseFloat(String(e.target.value).replace(',','.'));
+    if(!Number.isFinite(v)||v<=0){S[key]=null;e.target.value='';update();return;}   // vazio/zero = a definir
+    v=clamp(v,min,max);S[key]=v;e.target.value=v;$(rg).value=v;update();});
+}
+bindPair('rgConf','inConf','conf',50,99.99);
+bindPair('rgEps','inEps','eps',0.1,30);
+$('rgP').addEventListener('input',e=>{setPB(+e.target.value);update({pop:true});});
+[['inP',v=>v],['inPA',v=>100-v]].forEach(([id,toB])=>$(id).addEventListener('change',e=>{let v=parseFloat(String(e.target.value).replace(',','.'));
+  if(!Number.isFinite(v)||v<=0){setPB(null);update({pop:true});return;}
+  setPB(clamp(toB(clamp(v,0.5,99.5)),0.5,99.5));update({pop:true});}));
+$('inN').addEventListener('change',e=>{let v=Math.round(parseFloat(e.target.value));if(!Number.isFinite(v)||v<=0){S.N=null;e.target.value='';update();return;}if(v<10)v=10;S.N=v;e.target.value=v;update();});
+$('inNameA').addEventListener('input',e=>{S.nameA=e.target.value.trim()||'Praia';update();});
+$('inNameB').addEventListener('input',e=>{S.nameB=e.target.value.trim()||'Montanha';update();});
+$('ckN').addEventListener('change',e=>{S.useN=e.target.checked;$('inNcustom').disabled=!S.useN;update();});
+$('inNcustom').addEventListener('change',e=>{let v=Math.round(+e.target.value);if(!Number.isFinite(v)||v<10)v=10;S.nCustom=v;e.target.value=v;update();});
+document.querySelectorAll('.chips').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const v=+b.dataset.val,k=g.dataset.group;
+  if(k==='N'){S.N=v;$('inN').value=v;}else if(k==='conf'){S.conf=v;$('rgConf').value=v;$('inConf').value=v;}else if(k==='eps'){S.eps=v;$('rgEps').value=v;$('inEps').value=v;}else{setPB(v);}
+  update({pop:k==='p'});}));
+$('zBody').addEventListener('click',e=>{const tr=e.target.closest('tr[data-c]');if(!tr)return;S.conf=+tr.dataset.c;$('rgConf').value=S.conf;$('inConf').value=S.conf;update();});
+$('btnReset').onclick=()=>{Object.assign(S,DEF);$('inN').value='';$('inConf').value='';$('rgConf').value=80;$('inEps').value='';$('rgEps').value=0.5;setPB(null);
+  $('inNameA').value=S.nameA;$('inNameB').value=S.nameB;$('ckN').checked=false;$('inNcustom').disabled=true;$('inNcustom').value=S.nCustom;update({pop:true});};
+
+/* ============ BLOQUEIOS (gates) ============ */
+function openPanel(cardId){
+  document.body.classList.add('drawer-open');
+  const card=$(cardId);if(!card)return;
+  setTimeout(()=>{card.scrollIntoView({block:'nearest',behavior:'smooth'});card.classList.remove('flash');void card.offsetWidth;card.classList.add('flash');},60);
+}
+document.querySelectorAll('section.slide[data-need]').forEach(s=>{
+  const wrap=s.querySelector('.wrap');
+  const gp=document.createElement('div');gp.className='gate g-params';
+  gp.innerHTML='<p>⚙️ Defina primeiro os pilares do cálculo — <b>população</b>, <b>nível de confiança</b> e <b>margem de erro</b> — no painel de parâmetros.</p><button class="btn primary">Abrir parâmetros</button>';
+  gp.querySelector('button').onclick=()=>openPanel('cardParams');
+  wrap.prepend(gp);
+  if(s.dataset.need==='prop'){
+    const g=document.createElement('div');g.className='gate g-prop';
+    g.innerHTML='<p>📊 Escolha no painel a <b>proporção observada na pesquisa</b>. A opção que estiver à frente passa a ser a referência de todos os slides seguintes.</p><button class="btn primary">Escolher proporção</button>';
+    g.querySelector('button').onclick=()=>openPanel('cardProp');
+    wrap.prepend(g);
+  }
+});
+
+/* ============ TABS / NAV ============ */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id===t.dataset.pane));});
+const slides=[...document.querySelectorAll('section.slide')];
+$('navList').innerHTML=slides.map((s,i)=>`<li><a href="#${s.id}" data-i="${i}"><span>${String(i+1).padStart(2,'0')}</span>${s.dataset.title}</a></li>`).join('');
+$('navList').addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;document.body.classList.remove('drawer-open');if(document.body.classList.contains('present')){e.preventDefault();go(+a.dataset.i);}});
+const navLinks=[...document.querySelectorAll('#navList a')];
+const io=new IntersectionObserver(ents=>{ents.forEach(en=>{if(en.isIntersecting){const i=slides.indexOf(en.target);navLinks.forEach((a,j)=>a.classList.toggle('active',j===i));}});},{rootMargin:'-40% 0px -55% 0px'});
+slides.forEach(s=>io.observe(s));
+$('menuBtn').onclick=()=>document.body.classList.toggle('drawer-open');
+$('scrim').onclick=()=>document.body.classList.remove('drawer-open');
+
+/* ============ PRESENTATION ============ */
+let cur=0;
+const PARAM_IDX=slides.findIndex(s=>s.id==='s-pilares');
+const RES_IDX=slides.findIndex(s=>s.id==='s-resultado');
+function go(i){const prev=cur;cur=clamp(i,0,slides.length-1);slides.forEach((s,j)=>s.classList.toggle('cur',j===cur));
+  document.body.classList.toggle('pre-params',cur<PARAM_IDX);
+  if(document.body.classList.contains('present')&&cur!==prev){
+    // abre o painel no slide dos pilares (parâmetros) e no da pesquisa realizada (proporção)
+    if(cur===PARAM_IDX)openPanel('cardParams');
+    else if(cur===RES_IDX)openPanel('cardProp');
+    else if(prev===PARAM_IDX||prev===RES_IDX)document.body.classList.remove('drawer-open');}
+$('pvCount').textContent=`${cur+1} / ${slides.length}`;
+  navLinks.forEach((a,j)=>a.classList.toggle('active',j===cur));window.scrollTo(0,0);setTimeout(pyPump,0);}
+function setPresent(on){
+  let idx=cur;
+  if(on&&!document.body.classList.contains('present')){const ref=window.innerHeight*0.4;idx=0;slides.forEach((s,i)=>{if(s.getBoundingClientRect().top<=ref)idx=i;});}
+  document.body.classList.toggle('present',on);document.body.classList.remove('drawer-open');if(!on)document.body.classList.remove('pre-params');
+  if(on){go(idx);try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});}catch(e){}}
+  else{const s=slides[cur];try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}setTimeout(()=>s.scrollIntoView(),30);}}
+$('btnPresent').onclick=()=>setPresent(!document.body.classList.contains('present'));
+$('pvPrev').onclick=()=>go(cur-1);$('pvNext').onclick=()=>go(cur+1);$('pvExit').onclick=()=>setPresent(false);
+document.addEventListener('keydown',e=>{if(!document.body.classList.contains('present'))return;if(/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(cur+1);}else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(cur-1);}else if(e.key==='Escape'){setPresent(false);}});
+
+/* ============ BARRA SUPERIOR RECOLHÍVEL ============ */
+const topbar=document.querySelector('.topbar');
+function setPinned(on){topbar.classList.toggle('pinned',on);sSet('est-bar-pm',on?'1':'0');}
+if(sGet('est-bar-pm')==='1')topbar.classList.add('pinned');
+document.getElementById('barHandle').addEventListener('click',e=>{e.stopPropagation();setPinned(!topbar.classList.contains('pinned'));e.currentTarget.blur();});
+function setSidePinned(on){document.body.classList.toggle('side-pinned',on);sSet('est-side-pm',on?'1':'0');}
+if(sGet('est-side-pm')==='1')document.body.classList.add('side-pinned');
+function toggleSide(){const b=document.body;if(b.classList.contains('drawer-open')||b.classList.contains('side-pinned')){b.classList.remove('drawer-open');setSidePinned(false);}else setSidePinned(true);}
+document.getElementById('sideHandle').addEventListener('click',e=>{e.stopPropagation();toggleSide();e.currentTarget.blur();});
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+  if(e.key==='b'||e.key==='B'){setPinned(!topbar.classList.contains('pinned'));}
+  else if(e.key==='s'||e.key==='S'){toggleSide();}});
+
+/* ============ PYTHON (Pyodide + matplotlib) ============ */
+const PYODIDE_URL='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+const PY_IDS=['chVar','chNormal','chMargin','chResult','chBern1','chBinom','chSimHist','chSimConv','chProb','chLik0','chLikRel','chLogLik','chCurv','chIC'];
+const PY={ready:null,draw:null,on:new Set(),dirty:new Set(),busy:false,sim:0,timer:null,scrollT:null,blocks:{},state:'idle'};
+(function parsePySrc(){
+  let ids=null,buf=[];const flush=()=>{if(ids)ids.forEach(id=>PY.blocks[id]=buf.join('\n').trim());};
+  $('pySrc').textContent.split('\n').forEach(l=>{const m=l.match(/^# @@ (.+)$/);if(m){flush();ids=m[1].trim().split(/\s+/);buf=[];}else buf.push(l);});flush();
+})();
+function isDark(){const t=root.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+function pyParams(){return JSON.stringify({N:R.N,conf:R.cv,eps:R.ev,pB:R.pB*100,useN:S.useN,nCustom:S.nCustom,nameA:S.nameA,nameB:S.nameB,sim:PY.sim});}
+const PY_MSG={idle:'O Python carrega em segundo plano.',loading:'⏳ Carregando Python (numpy + matplotlib)…',ready:'✅ Python pronto — Pyodide 0.26 no navegador.',error:'⚠️ Não foi possível carregar o Python (sem internet?).'};
+function pySetState(s){PY.state=s;$('pyStatus').textContent=PY_MSG[s];
+  PY.on.forEach(id=>{const host=$(id),box=host.closest('.chart-box'),msg=box.querySelector('.py-msg');
+    if(s==='loading')msg.textContent='carregando Python…';
+    else if(s==='error'){msg.textContent='Python indisponível (sem internet?) — exibindo versão de reserva';host.hidden=false;box.querySelector('.py-out').hidden=true;}});}
+function pyLoadScript(){return new Promise((res,rej)=>{if(window.loadPyodide)return res();const s=document.createElement('script');s.src=PYODIDE_URL+'pyodide.js';s.onload=res;s.onerror=()=>rej(new Error('pyodide.js'));document.head.appendChild(s);});}
+function pyEnsure(){
+  if(PY.ready)return PY.ready;pySetState('loading');
+  PY.ready=(async()=>{await pyLoadScript();const py=await loadPyodide({indexURL:PYODIDE_URL});await py.loadPackage(['numpy','matplotlib']);
+    py.runPython($('pySrc').textContent);PY.draw=py.globals.get('desenhar');pySetState('ready');pyPump();})()
+    .catch(err=>{console.error('[Python]',err);PY.ready=null;pySetState('error');});
+  return PY.ready;
+}
+function pyVisible(id){const box=$(id).closest('.chart-box');if(!box.offsetParent)return false;const r=box.getBoundingClientRect();return r.bottom>-300&&r.top<innerHeight+300;}
+function pyRender(id){
+  const host=$(id),box=host.closest('.chart-box'),out=box.querySelector('.py-out'),msg=box.querySelector('.py-msg');
+  try{const t0=performance.now();let svg=PY.draw(id,pyParams(),isDark());svg=svg.slice(svg.indexOf('<svg'));
+    out.innerHTML=svg;host.hidden=true;out.hidden=false;msg.textContent=`matplotlib · ${Math.round(performance.now()-t0)} ms`;}
+  catch(err){console.error('[Python]',id,err);msg.textContent='erro no Python — exibindo versão de reserva';host.hidden=false;out.hidden=true;}
+}
+async function pyPump(){
+  if(!PY.draw||PY.busy||!PY.dirty.size)return;PY.busy=true;
+  try{while(PY.dirty.size){const id=[...PY.dirty].find(pyVisible);if(!id)break;PY.dirty.delete(id);if(PY.on.has(id))pyRender(id);await new Promise(r=>setTimeout(r,16));}}
+  finally{PY.busy=false;}
+}
+function pyOnUpdate(){if(!PY.on.size)return;PY.on.forEach(id=>PY.dirty.add(id));clearTimeout(PY.timer);PY.timer=setTimeout(pyPump,250);}
+function pyHighlight(el){if(!window.hljs)return;el.querySelectorAll('code').forEach(c=>{if(!c.dataset.hl){try{hljs.highlightElement(c);}catch(e){}c.dataset.hl='1';}});}
+PY_IDS.forEach(id=>{
+  const host=$(id);if(!host)return;const box=host.closest('.chart-box');
+  const bar=document.createElement('div');bar.className='py-bar';
+  bar.innerHTML='<span class="py-msg">carregando Python…</span><button class="py-codebtn" title="Ver o código Python deste gráfico">&lt;/&gt; código</button>';
+  box.insertBefore(bar,box.firstChild);
+  // só gráficos em Python: o desenho JS fica oculto (usado apenas como reserva se o Python não carregar)
+  host.hidden=true;
+  const out=document.createElement('div');out.className='py-out';out.innerHTML='<div class="py-loading">⏳ gerando gráfico com matplotlib…</div>';host.after(out);
+  PY.on.add(id);PY.dirty.add(id);
+  const code=document.createElement('div');code.className='py-code';code.hidden=true;
+  code.innerHTML='<pre><code class="language-python"></code></pre><details><summary>Ver a função calcular() usada por todos os gráficos</summary><pre><code class="language-python"></code></pre></details>';
+  const cs=code.querySelectorAll('code');cs[0].textContent='# R = calcular(parâmetros do painel) · T = cores do tema\n\n'+(PY.blocks[id]||'');cs[1].textContent=PY.blocks.calcular||'';
+  out.after(code);
+  const cb=bar.querySelector('.py-codebtn');
+  cb.addEventListener('click',()=>{code.hidden=!code.hidden;cb.classList.toggle('on',!code.hidden);if(!code.hidden)pyHighlight(code);});
+});
+$('btnSim').addEventListener('click',()=>{PY.sim++;['chSimHist','chSimConv'].forEach(id=>{if(PY.on.has(id))PY.dirty.add(id);});pyPump();});
+$('themeBtn').addEventListener('click',pyOnUpdate);
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',pyOnUpdate);}catch(e){}
+window.addEventListener('scroll',()=>{clearTimeout(PY.scrollT);PY.scrollT=setTimeout(pyPump,150);},{passive:true});
+/* legenda de fonte em todos os gráficos */
+document.querySelectorAll('.chart-box').forEach(box=>{const f=document.createElement('p');f.className='fonte';f.textContent='Fonte: autor';box.appendChild(f);});
+function pyBoot(){
+  pyEnsure();   // carrega o Python logo no início: todos os gráficos são desenhados com matplotlib
+}
+
+/* ============ INIT ============ */
+function init(){renderStaticTex();update({pop:true,now:true});pyBoot();}
+if(document.readyState==='complete')init();else window.addEventListener('load',init);
+})();
+</script>
+</body>
+</html>
